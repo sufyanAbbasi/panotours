@@ -90,7 +90,7 @@ html, body {
     width: 100%;
     height: 400px;
     margin: 0px;
-    background-color: red;
+    background-color: black;
 }
 
 .search-bar{
@@ -146,14 +146,17 @@ html, body {
     padding: 0px;
 }
 
-.post .x-button{
+.post .button{
     position: absolute;
     height: 47px;
     width: 47px;
     top: 0px;
-    right: 0px;
     background-color: rgb(150,150,150);
-    border: none;'
+    border: none;
+}
+
+.post .x-button{
+    right: 0px;
 }
 
 .x-button:hover{
@@ -161,23 +164,49 @@ html, body {
 }
 
 .post .min-button{
-    position: absolute;
-    height: 47px;
-    width: 47px;
-    top: 0px;
     right: 48px;
-    background-color: rgb(150,150,150);
-    border: none;'
 }
 
 .min-button:hover{
     cursor: pointer;
 }
 
-.post iframe{
-    border: 0px;
+.post .content-area{
     width: 100%;
-    margin-top: 50px;
     height: calc(100% - 50px);
+    margin-top: 50px;
+    background-color: rgb(20,20,20);
+}
+
+.post .tab-bar{
+    height: 25px;
+    background-color: rgb(45,45,45);
+}
+
+.post .tab{
+    float: left;
+    height: 100%;
+    width: 20%;
+    min-width: 150px;
+    background-color: black;
+    text-align: center;
+    line-height: 25px;
+    transition: background-color .1s;
+}
+
+.post .tab:hover{
+    background-color: rgb(150,150,150);
+    cursor: pointer;
+}
+
+.tab p{
+    color: white;
+}
+
+.post iframe{
+    width: 100%;
+    height: calc(100% - 50px);
+    border: none;
+
 
 }

@@ -6,10 +6,16 @@ function init(){
 		postHTML.push('<a name="'+ title.split(' ').join('_') + '"></a>');
 		postHTML.push('<div class="title">');
 		postHTML.push('<p>' + title + '</p>')
-		postHTML.push('<div class="x-button"><span style="color:rgb(200,200,200);">&times</span></div>'); 
-		postHTML.push('<div class="min-button"><span style="color:rgb(200,200,200);">&#8722</span></div>'); 
+		postHTML.push('<div class="button x-button"><span style="color:rgb(200,200,200);">&times</span></div>'); 
+		postHTML.push('<div class="button min-button"><span style="color:rgb(200,200,200);">&#8722</span></div>'); 
 		postHTML.push('</div>')
+		postHTML.push('<div class="content-area">');
+		postHTML.push('<div class="tab-bar">');
+		postHTML.push('<div class="tab"><p>Panorama</p></div>');
+		postHTML.push('<div class="tab"><p>Information</p></div>');
+		postHTML.push('</div>');
 		postHTML.push('<iframe src="' + url + '" allowFullScreen></iframe>');
+		postHTML.push('</div>'); 
 		postHTML.push('</div>');
 		var postRef = $(postHTML.join(""));
 
@@ -26,16 +32,18 @@ function init(){
 		$("#contents > ul").append(linkRef);
 
 
-		$(postRef).children().children().filter(".x-button").click(function(){
-			$(postRef).remove();
-			$(linkRef).remove();
+		$(postRef).find(".x-button").click(function(){
+			if(window.confirm("Are you sure you want to delete this panorama?")){
+				$(postRef).remove();
+				$(linkRef).remove();
+			}
 		})
 
-		var minButton = $(postRef).children().children().filter(".min-button");
+		var minButton = $(postRef).find(".min-button");
 
 		$(minButton).click(function(){
-			var postIframe = $(postRef).children().filter("iframe"); 
-			if ($(postIframe).is(":visible")){
+			var postContent = $(postRef).find(".content-area"); 
+			if ($(postContent).is(":visible")){
 				$(postRef).height("50px");
 				$(minButton).children().html("&#43");
 			}else{
@@ -43,7 +51,7 @@ function init(){
 				$(minButton).children().html("&#8722");
 			}
 
-			$(postIframe).toggle();
+			$(postContent).toggle();
 
 
 		})
