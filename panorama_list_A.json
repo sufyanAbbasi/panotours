@@ -1,28 +1,32 @@
-//Link: https://api.myjson.com/bins/4iayi
+//Link: https://api.myjson.com/bins/4xbsi
 
 {
 	"panoramas" : [
 	{ 
 		"title" : "Bourges Exterior Clerestory", 
 		"url" : "http://digitallibrary.vassar.edu/panorama_krpano_embed/gothic:1", 
+		"PID" : "gothic:1", 
 		"country" : "France", 
 		"city" : "Bourges"
 	},
 	{ 
 		"title" : "Chartres South Roof Passage", 
 		"url" : "http://digitallibrary.vassar.edu/panorama_krpano_embed/gothic:8", 
+		"PID" : "gothic:8", 
 		"country" : "France", 
 		"city" : "Chartres"
 	},
 	{ 
 		"title" : "Paris North Transept Rose Base", 
 		"url" : "http://digitallibrary.vassar.edu/panorama_krpano_embed/gothic:15", 
+		"PID" : "gothic:15", 
 		"country" : "France", 
 		"city" : "Paris"
 	},
 	{ 
 		"title" : "Soane North Drawing Room", 
 		"url" : "http://digitallibrary.vassar.edu/panorama_krpano_embed/gothic:22", 
+		"PID" : "gothic:22", 
 		"country" : "Britain", 
 		"city" : "London"
 	}
