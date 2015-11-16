@@ -4,7 +4,7 @@ var SEARCH_ALL_GOTHIC = "dc.identifier:gothic*";
 var SEARCH_PANO_TITLE = "dc.title_s:"
 var panoIDList = []; 
 var lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere malesuada leo eget pellentesque. Praesent hendrerit tincidunt velit imperdiet commodo. In porttitor luctus justo sit amet ultricies. Sed vulputate velit ac feugiat iaculis. Nullam lacinia, elit quis pretium molestie, est purus accumsan orci, tristique lacinia neque ipsum nec libero. Maecenas pellentesque, magna id faucibus consequat, nisi libero pharetra nulla, in vehicula sapien nisi imperdiet justo. Proin vestibulum purus quam, ut dictum elit interdum id. Curabitur ut pretium tortor. Duis vehicula aliquam quam egestas semper. Quisque bibendum nulla in commodo efficitur. Vivamus vehicula ligula id consectetur feugiat.";
- 
+var map;
 
 var posts = []; 
 
@@ -13,26 +13,75 @@ function init(){
 	processSolrJSON(SEARCH_ALL_GOTHIC, processAllPanos);
 
 	var timer = null; 
-       $('#search-bar').keyup(function(){
-          if ($('#search-bar').val() == ""){
-             clearInterval(timer); 
-             timer = null; 
-             searchAttributes(); 
-          }else if (timer == null) {
-             timer = setTimeout(function(){
-             searchAttributes()}, 100)}
-       }).keydown(function(){
-          if (timer) {
-             clearInterval(timer);
-             timer = null; 
-          }
-       }).click(function(){
-          $(this).focus(); 
+   	$('#search-bar').keyup(function(){
+      	if ($('#search-bar').val() == ""){
+        	clearInterval(timer); 
+        	timer = null; 
+        	searchAttributes(); 
+      	}else if (timer == null) {
+        	timer = setTimeout(function(){
+        	searchAttributes()}, 100)}
+   	}).keydown(function(){
+      	if (timer) {
+        	clearInterval(timer);
+        	timer = null; 
+    }
+   	}).click(function(){
+      	$(this).focus(); 
 
-       }).on("search", function(){
-          searchAttributes(); 
-       }); 
+   	}).on("search", function(){
+      	searchAttributes(); 
+   	}); 
 
+   	var searchMinButton = $('#search .min-button');
+   	var searchDiv = $('#search');
+   	var results = $(searchMinButton).siblings("#results");
+   	var animationSpeed = 300;
+
+	$(searchMinButton).click(function(){ 
+		if ($(searchDiv).height() != 50){
+			$(searchDiv).animate({height: 50}, {  
+				duration: animationSpeed, 
+				queue : true, 
+			});
+			$(searchMinButton).children().html("&#43");
+		}else{
+			$(searchDiv).animate({height: "50%"}, {
+				duration: animationSpeed, 
+				queue : true,
+			});
+			$(searchMinButton).children().html("&#8722");
+		}
+	});
+
+	$('#search #search-bar').focus(function(){
+		if($(searchDiv).height != 50){
+			$(searchDiv).animate({height: "50%"}, animationSpeed);
+			$(searchMinButton).children().html("&#8722");
+			$(results).slideDown({  duration: animationSpeed, 
+									queue : true});
+		}
+		
+	})
+
+	window.addEventListener('resize', function(){ 
+        google.maps.event.trigger(map, 'resize'); 
+        resizeToWindow();
+      }, false);
+
+}
+
+function resizeToWindow(){
+	
+	var winWidth = $(window).width()
+
+	if($('#left-sidebar').width() == parseInt($('#left-sidebar').css('min-width'), 10)){
+		$('#search').css('margin-left', (parseInt($('#left-sidebar').css('min-width'), 10) + 10)); 
+		$('.main-content').css('margin-left', 365); 
+	}else{
+		$('#search').css('margin-left', 'calc(25% + 10px)'); 
+		$('.main-content').css('margin-left', 'calc(65%/2)');
+	}
 }
 
 function searchAttributes(){
@@ -197,6 +246,7 @@ function removePost(panoID){
 			$(posts[i].postRef).remove();
 			$(posts[i].linkRef).remove();
 			posts.splice(i, 1);
+			break;
 		}
 	}
 
@@ -206,15 +256,15 @@ function removePost(panoID){
 
 function tabSelect(element){
 	if(!$(element).hasClass('selected')){
-		$(element).siblings().filter('.selected').removeClass('selected');
+		$(element).siblings('.selected').removeClass('selected');
 		$(element).addClass('selected');
 		switchTabs(element); 
 	}
 }
 
 function switchTabs(element){
-	var $pano = $(element).parent().siblings().filter('.panorama'); 
-	var $info = $pano.siblings().filter('.information'); 
+	var $pano = $(element).parent().siblings('.panorama'); 
+	var $info = $pano.siblings('.information'); 
 	$($info).toggle();
 	$($pano).toggle();
 }
@@ -303,7 +353,7 @@ function initializeGoogleMaps(){
   		zoom: 4,
   		styles: mapStyle,
 	}
-	var map = new google.maps.Map(mapCanvas, mapOptions); 
+	map = new google.maps.Map(mapCanvas, mapOptions); 
 }
 
 $(init);

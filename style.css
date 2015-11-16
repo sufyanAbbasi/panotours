@@ -112,12 +112,15 @@ html, body {
 }
 
 #search{ 
-    height: 450px;
-    margin: 30px calc(65%/2) 0px calc(65%/2);
+    height: 50%;
+    margin: 30px 10px 0px calc(25% + 10px);
+    min-width: 500px;
 }
 
 #search-bar{
-    width: 100%;
+    position: relative;
+    float: left;
+    width: calc(100% - 50px);
     height: 50px;
     font-size: 12px;
     border: none;
@@ -129,33 +132,54 @@ html, body {
     background-color: white;
 }
 
+#search .button{
+    position: relative;
+    float: right;
+    height: 46px;
+    width: 48px;
+    line-height: 46px;
+    background-color: white;
+    border-top: 2px solid rgba(180,180,180, .75);
+    border-bottom: 2px solid rgba(180,180,180, .75);
+    border-left: 2px solid rgba(180,180,180, .75);
+}
+
 #results{
     width: 100%;
+    min-width: 300px;
     height: calc(100% - 56px);
+    top:50px;
     background-color: white;
+    float: left;
 }
 
 #results-list{
-    width: 40%; 
+    width: 30%; 
     height: 100%;
-    float: left;
     background-color: rgb(40,40,40);
     color: white;
     overflow: auto;
+    float: left;
+    word-wrap:break-word;
 }
 
 #results-list ul{
     list-style-type: none;
     padding: 0;
-    margin: 10px 0;
+    margin: 0;
 }
 
 #results-list li{
-    margin: 5px 0;
+    margin: 20px 1px;
+    height: 30px;
 }
 
+/*#results-list input{
+    display: none;
+}*/
+
 #search-map{
-    width: 60%;
+    width: 70%;
     height: 100%;
 }
 
@@ -204,23 +228,23 @@ html, body {
     top: 0px;
     background-color: rgb(150,150,150);
     border: none;
+    font-size: 30px;
+    text-align: center;
+    line-height: 47px;
 }
 
-.x-button{
-    right: 0px;
-}
-
-.x-button:hover{
+.button:hover{
     cursor: pointer;
+}
+
+.post .x-button{
+    right: 0px;
 }
 
 .post .min-button{
     right: 48px;
 }
 
-.min-button:hover{
-    cursor: pointer;
-}
 
 .post .content-area{
     width: 100%;
