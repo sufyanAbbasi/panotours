@@ -156,11 +156,19 @@ html, body {
 #results-list{
     width: 30%; 
     height: 100%;
-    background-color: rgb(40,40,40);
-    color: white;
+    background-color: rgb(230, 230, 230);
+    color: #444;
     overflow: auto;
     float: left;
-    word-wrap:break-word;
+}
+
+span.avoidWrap{
+    display:inline-block;
+}
+
+#results-list h2{
+    margin-left: 5px;
+    text-align: center;
 }
 
 #results-list ul{
@@ -170,13 +178,43 @@ html, body {
 }
 
 #results-list li{
-    margin: 20px 1px;
-    height: 30px;
+    margin: 8px;
+    height: 80px;
+    text-align: center;
+    word-wrap:break-word;
+    background: white;
 }
 
-/*#results-list input{
+#results-list input{
     display: none;
-}*/
+}
+
+#results-list p{
+    position: relative;
+    margin: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.custom-checkbox{
+    position: relative;
+    float: left;
+    width: 15px;
+    height: 15px;
+    margin: 0px 8px;
+    background: #ddd;
+    /*border: 2px solid #999;*/
+    border-radius: 50%;
+    padding: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.pano-checkbox:checked + .custom-checkbox{
+    background: #43D58C;
+    /*background: rgb(100,100,100); */
+}
+
 
 #search-map{
     width: 70%;
