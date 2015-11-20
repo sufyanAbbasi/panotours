@@ -1,10 +1,18 @@
 var PANO_URL = "http://digitallibrary.vassar.edu/panorama_krpano_embed/";
-var GOTHIC_NAMESPACE = "gothic:"
-var SEARCH_ALL_GOTHIC = "dc.identifier:gothic*";
-var SEARCH_PANO_TITLE = "dc.title_s:"
-var SEARCH_PANO_ID = "PID"; 
+var SOLR_URL = "http://dg02.vassar.edu:8080/solr/select";
+var GOTHIC_NAMESPACE = "gothic:";
+var ALL_GOTHIC = "dc.identifier:gothic*";
+var PANO_TITLE = "dc.title_s:";
+var ACTIVE_PANO = "mods.title_sort:*"; 
+var ALL_PANOS = "+" + ALL_GOTHIC + " +" + ACTIVE_PANO;
+var PANO_ID = "PID"; 
+var PARENT_DIR = "PARENT_collection_s";
 var panoIDList = []; 
-var lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere malesuada leo eget pellentesque. Praesent hendrerit tincidunt velit imperdiet commodo. In porttitor luctus justo sit amet ultricies. Sed vulputate velit ac feugiat iaculis. Nullam lacinia, elit quis pretium molestie, est purus accumsan orci, tristique lacinia neque ipsum nec libero. Maecenas pellentesque, magna id faucibus consequat, nisi libero pharetra nulla, in vehicula sapien nisi imperdiet justo. Proin vestibulum purus quam, ut dictum elit interdum id. Curabitur ut pretium tortor. Duis vehicula aliquam quam egestas semper. Quisque bibendum nulla in commodo efficitur. Vivamus vehicula ligula id consectetur feugiat.";
+var lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere malesuada leo eget pellentesque. Praesent hendrerit tincidunt velit imperdiet commodo. "
+			+ "In porttitor luctus justo sit amet ultricies. Sed vulputate velit ac feugiat iaculis. Nullam lacinia, elit quis pretium molestie, est purus accumsan orci,"
+			+ "tristique lacinia neque ipsum nec libero. Maecenas pellentesque, magna id faucibus consequat, nisi libero pharetra nulla, in vehicula sapien nisi imperdiet justo."
+			+ "Proin vestibulum purus quam, ut dictum elit interdum id. Curabitur ut pretium tortor. Duis vehicula aliquam quam egestas semper. Quisque bibendum nulla in commodo efficitur."
+			+ "Vivamus vehicula ligula id consectetur feugiat.";
 var map;
 
 var posts = []; 
@@ -14,7 +22,7 @@ var totalNumPanos;
 function init(){
 	resizeToWindow();
 	// processPosts("https://api.myjson.com/bins/4xbsi");
-	processSolrJSON(SEARCH_ALL_GOTHIC, processAllPanos);
+	processSolrJSON(ALL_PANOS, processAllPanos);
 
 	var timer = null; 
    	$('#search-bar').keyup(function(){
@@ -24,7 +32,7 @@ function init(){
         	searchAttributes(); 
       	}else if (timer == null) {
         	timer = setTimeout(function(){
-        	searchAttributes()}, 100)}
+        	searchAttributes()}, 50)}
    	}).keydown(function(){
       	if (timer) {
         	clearInterval(timer);
@@ -93,17 +101,17 @@ function searchAttributes(){
 	 if(str.length == 0){
 	 	$('#results-list ul label').show(); 
 	 	console.log("Show all panos.");
-	 	$('#results-list h2').replaceWith('<h2>Showing: <span class="avoidWrap">' + totalNumPanos + ' of ' + totalNumPanos + '</span></h2>');
+	 	$('#pano-showing-total').replaceWith('<span id="pano-showing-total">Showing: <span class="avoidWrapping">' + totalNumPanos + ' of ' + totalNumPanos + '</span></span>');
 	 	return;
 	 }
 	 var wordList = str.split(" ") || [];
-     var searchConditions = "+" + SEARCH_ALL_GOTHIC; 
+     var searchConditions = ALL_PANOS; 
 
      var allSpaces = true;
 
      for(var i = 0, len = wordList.length; i < len; i++){
      	if(wordList[i].length != 0){
-     		searchConditions += " +" + SEARCH_PANO_TITLE + "*" + wordList[i] + "*"; 
+     		searchConditions += " +" + PANO_TITLE + "*" + wordList[i] + "*"; 
      		allSpaces = false;
      	}
      }
@@ -126,7 +134,7 @@ function searchAttributes(){
 function processSolrJSON(search, handler){
 	console.log("processing search: " + search)
 	$.ajax({
-		'url': 'http://dg02.vassar.edu:8080/solr/select',
+		'url': SOLR_URL,
 		'data': {
 			      'indent': 'on',
 			      'start':'0',
@@ -149,25 +157,39 @@ function processAllPanos(panoList, numFound){
 		var pano = panoList[i];
 		var panoTitle = pano["dc.title_s"][0]; 
 		var panoID = parseInt(pano.PID.split("gothic:")[1]); 
-		panoIDList.push(pano.PID);
-		$('#results-list ul').append('<label><li class="nohighlight"><input class="pano-checkbox" type="checkbox" data-title="' + panoTitle +
-			'" data-id="'+ panoID + '" onclick=clickPano(this)><div class="custom-checkbox"></div><p>' + panoTitle.split('_').join(' ') + '</p></li></label>')
-		// makePost(panoTitle, panoID); 
+		var nonPanos = 0; 
+		if(!isNaN(panoID)){
+			panoIDList.push(pano.PID);
+			$('#pano-title').after('<label class="pano-list-elements"><li class="nohighlight"><input class="pano-checkbox" type="checkbox" data-title="' + panoTitle +
+				'" data-id="'+ panoID + '" onclick=clickPano(this)><div class="custom-checkbox"></div><p>' + panoTitle.split('_').join(' ') + '</p></li></label>');
+			// makePost(panoTitle, panoID); 
+		}else{
+			console.log("Found: " + panoTitle);
+			nonPanos++; 
+		}
+		
 	}
 
-	totalNumPanos = numFound; 
+	totalNumPanos = numFound - nonPanos; 
 
-	$('#results-list h2').replaceWith('<h2>Showing: <span class="avoidWrap">' + totalNumPanos + ' of ' + totalNumPanos + '</span></h2>');
+	$('#pano-showing-total').replaceWith('<span id="pano-showing-total">Showing: <span class="avoidWrapping">' + totalNumPanos + ' of ' + totalNumPanos + '</span></span>');
 }
 
 function processSearch(panoList, numFound){
-	$('#results-list ul').children().hide(); 
+	$('.pano-list-elements').hide(); 
+
 	for (var i in panoList){
+		var nonPanos = 0; 
 		var pano = panoList[i];
-		var panoID = parseInt(pano.PID.split("gothic:")[1]); 
-		$('input[data-id="'+ panoID + '"]').parent().parent().show();
+		var panoID = parseInt(pano.PID.split("gothic:")[1]);
+		if(!isNaN(panoID)){
+			$('input[data-id="'+ panoID + '"]').parent().parent().show();
+		}else{
+			nonPanos++;
+		}
+		
 	}
-	$('#results-list h2').replaceWith('<h2>Showing: <span class="avoidWrap">' + numFound + ' of ' + totalNumPanos + '</span></h2>');
+	$('#pano-showing-total').replaceWith('<span id="pano-showing-total">Showing: <span class="avoidWrapping">' + (numFound-nonPanos) + ' of ' + totalNumPanos + '</span></span>');
 }
 
 
@@ -184,9 +206,10 @@ function makePost(title, panoID){
 	postHTML.push('<div class="post">');
 	postHTML.push('<a name="'+ title.split(' ').join('_') + '"></a>');
 	postHTML.push('<div class="title">');
+	postHTML.push('<div class="pano-icon"></div>');
 	postHTML.push('<p>' + title + '</p>')
-	postHTML.push('<div class="button x-button nohighlight"><span style="color:rgb(200,200,200);">&times</span></div>'); 
-	postHTML.push('<div class="button min-button nohighlight"><span style="color:rgb(200,200,200);">&#8722</span></div>'); 
+	postHTML.push('<div class="button x-button nohighlight">&times</div>'); 
+	postHTML.push('<div class="button min-button nohighlight">&#8722</div>'); 
 	postHTML.push('</div>')
 	postHTML.push('<div class="content-area">');
 	postHTML.push('<div class="tab-bar">');

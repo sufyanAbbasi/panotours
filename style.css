@@ -87,6 +87,7 @@ html, body {
 
 #contents h1{
     font-size: 25px;
+    text-align: center;
 }
 
 
@@ -185,11 +186,35 @@ span.avoidWrap{
     background: white;
 }
 
+.results-title{
+    height: 50px !important;
+    border-bottom: 3px solid rgb(100,100,100);
+}
+
+.results-title span{
+    font-size: 15px;
+}
+
+#pano-title{
+    background-color: #6ddea6 !important;
+}
+
+#cathedral-title{
+    background-color: #6ddea6 !important;
+}
+
+#results-list p{
+    position: relative;
+    margin: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
 #results-list input{
     display: none;
 }
 
-#results-list p{
+#results-list h3{
     position: relative;
     margin: 0;
     top: 50%;
@@ -211,7 +236,7 @@ span.avoidWrap{
 }
 
 .pano-checkbox:checked + .custom-checkbox{
-    background: #43D58C;
+    background: #6ddea6;
     /*background: rgb(100,100,100); */
 }
 
@@ -246,12 +271,22 @@ span.avoidWrap{
     min-width: 500px;
     height: 47px;
     font-size: 30px;
-    background-color: rgb(180,180,180); 
+    background-color: rgb(230, 230, 230); 
     margin: 0px;
     padding: 0px;
     line-height: 47px; 
     text-align: center;
     border-bottom: 3px solid black;
+}
+
+.pano-icon{
+    position: absolute;
+    top: calc((47px - 25px)/2);
+    left: 10px;
+    width: 25px;
+    height: 25px;
+    background-color: #6ddea6;
+    border-radius: 50%;
 }
 
 .post p{
@@ -269,6 +304,7 @@ span.avoidWrap{
     font-size: 30px;
     text-align: center;
     line-height: 47px;
+    color: white;
 }
 
 .button:hover{
