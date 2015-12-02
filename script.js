@@ -32,6 +32,7 @@ var totalNumPanos, totalNumCathedrals;
 function init(){
 	resizeToWindow();
 	// processPosts("https://api.myjson.com/bins/4xbsi");
+	checkPostsDisplay();
 	processSolrJSON(ALL_PANOS, processAllPanos);
 	processSolrJSON(ALL_CATHEDRALS, processAllCathedrals);
 
@@ -163,27 +164,37 @@ function processSolrJSON(search, handler){
 }
 
 function processAllPanos(panoList, numFound){
+	appendInOrder = []; 
 	for (var i in panoList){
 		var pano = panoList[i];
+		console.log(panoTitle);
 		var panoTitle = pano["dc.title_s"][0]; 
 		var panoID = pano.PID.split("gothic:")[1]; 
 		panoIDList.push(pano.PID);
-		$('#pano-title').after('<label class="pano-label result-list-elements nohighlight"><li><input class="pano-checkbox" type="checkbox" data-title="' + panoTitle +
+		appendInOrder.push('<label class="pano-label result-list-elements nohighlight"><li><input class="pano-checkbox" type="checkbox" data-title="' + panoTitle +
 			'" data-id="'+ panoID + '" onclick=clickPano(this)><div class="custom-checkbox"></div><p>' + panoTitle.split('_').join(' ') + '</p></li></label>');
 		}
 
+	for(var i = appendInOrder.length - 1; i >= 0; i--){
+		$('#pano-title').after(appendInOrder[i]); 
+	}
 	totalNumPanos = numFound;
 
 	$('#pano-showing-total').replaceWith('<span id="pano-showing-total">Showing: <span class="avoidWrapping">' + totalNumPanos + ' of ' + totalNumPanos + '</span></span>');
 }
 
 function processAllCathedrals(cathedralList, numFound){
+	appendInOrder = []; 
 	for (var i in cathedralList){
 		var cathedral = cathedralList[i];
 		var cathedralTitle = cathedral["dc.title_s"][0]; 
 		var cathedralID = cathedral.PID.split("gothic:")[1]; 
-		$('#cathedral-title').after('<label class="cathedral-label result-list-elements nohighlight"><li><input class="cathedral-checkbox" type="checkbox" data-title="' + cathedralTitle +
+		appendInOrder.push('<label class="cathedral-label result-list-elements nohighlight"><li><input class="cathedral-checkbox" type="checkbox" data-title="' + cathedralTitle +
 			'" data-id="'+ cathedralID + '" onclick=clickCathedral(this)><div class="custom-checkbox"></div><p>' + cathedralTitle.split('_').join(' ') + '</p></li></label>');
+	}
+
+	for(var i = appendInOrder.length - 1; i >= 0; i--){
+		$('#cathedral-title').after(appendInOrder[i]); 
 	}
 
 	totalNumCathedrals = numFound; 
@@ -250,8 +261,8 @@ function makeCathedralPost(title, cathedralID){
 	postHTML.push('<div class="tab resources nohighlight" data-tab="resources"><p>Resources</p></div>');
 	postHTML.push('</div>');
 	postHTML.push('<div class="panoramas tab-content">');
-	postHTML.push('<div class="pano-list"><div>');
-	postHTML.push('<div class="pano"><div>');  
+	postHTML.push('<div class="pano-list"><ul></ul></div>');
+	postHTML.push('<div class="pano-tiles"></div>');  
 	postHTML.push('</div>');
 	postHTML.push('<div class="information tab-content" style="display: none;">');
 	postHTML.push('<div class="google-maps"></div>'); 
@@ -269,7 +280,7 @@ function makeCathedralPost(title, cathedralID){
 	var postRef = $(postHTML.join(""));
 
 	$("#posts").append(postRef);
-
+	checkPostsDisplay();
 	var linkHTML = [];
 	linkHTML.push('<li>');
 	linkHTML.push('<a href="#' + title.split(' ').join('_') + '">'); 
@@ -287,13 +298,21 @@ function makeCathedralPost(title, cathedralID){
 	}); 
 
 	processSolrJSON(ALL_PANOS + ' AND ' + PARENT_DIR + '"' + title + '"' , function(panoList, numFound){
-		$panoDiv = $(postRef).find(".panoramas"); 
-		// for (var i in panoList){
-		// 	var pano = panoList[i];
-		// 	var panoID = pano.PID.split("gothic:")[1];
-		// 	$($panoDiv).append('<img class="tile" data-pid="' + panoList[i]
-		// 		+'" src="' + THUMBNAIL_BEGIN + GOTHIC_NAMESPACE + panoID + THUMBNAIL_END + '">');
-		// }
+		$panoTilesDiv = $(postRef).find(".pano-tiles"); 
+		$panoList = $($panoTilesDiv).siblings('.pano-list').find('ul'); 
+		for (var i in panoList){
+			var pano = panoList[i];
+			var panoID = pano.PID.split("gothic:")[1];
+			var panoTitle = pano["dc.title_s"][0]; 
+			$($panoList).append('<li data-pid="' + panoList[i] + '" >' + panoTitle + '</li>');
+			var tile = $('<div class="tile" '
+				+ 'data-pid="' + panoID
+				+ '" data-title="' + panoTitle
+				+ '" > <img src="' + THUMBNAIL_BEGIN + GOTHIC_NAMESPACE + panoID + THUMBNAIL_END 
+				+ '" alt="'+ panoTitle + '"/>'
+				+ '<div class="hover-text"><p>' + panoTitle + '</p></div></div>'); 
+			$($panoTilesDiv).append(tile);
+		}
 	})
 
 	$(postRef).find(".x-button").click(function(){
@@ -349,7 +368,7 @@ function makePanoPost(title, panoID){
 
 
 	$("#posts").append(postRef);
-
+	checkPostsDisplay();
 	var linkHTML = [];
 	linkHTML.push('<li>');
 	linkHTML.push('<a href="#' + title.split(' ').join('_') + '">'); 
@@ -405,6 +424,15 @@ function removePost(panoID){
 	}
 
 	$('input[data-id="'+ panoID + '"]').prop('checked', false);
+	checkPostsDisplay();
+}
+
+function checkPostsDisplay(){
+	if($('#posts').children().length == 0){
+		$('#posts').hide();
+	}else{
+		$('#posts').show();
+	}
 }
 
 

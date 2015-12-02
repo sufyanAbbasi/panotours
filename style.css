@@ -1,4 +1,5 @@
 html, body {
+    position: absolute;
     width: 100%;
     height: 100%;
     margin: 0;
@@ -104,6 +105,10 @@ html, body {
 
 #contents ul{
     list-style: none;
+}
+
+#contents .cathedral-icon{
+
 }
 
 .main-content{
@@ -404,8 +409,60 @@ span.avoidWrap{
     line-height: 25px;
 }
 
+.pano-list{
+    background-color: rgba(100,100,100,.5); 
+    width: 20%;
+    height: 100%;
+    float: left;
+    overflow: auto;
+}
+
+.pano-list ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
 .tile{
+    position: relative;
+    float: left;
     width: 200px;
     height: 200px;
     margin: 10px;
+}
+
+.hover-text{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: white;
+    color: black;
+    opacity: 0;
+    transition: opacity .3s;
+    text-align: center;
+}
+
+.hover-text p{
+    position: absolute;
+    margin: 0 !important;
+    padding: 0 !important;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+}
+
+.tile:hover .hover-text {
+  opacity: .8;
+  cursor: pointer;
+}
+
+.pano-list li {
+    margin: 20px 3px;
+}
+
+.pano-list li:hover{
+    cursor: pointer;
+    color: rgb(180,180,180);
 }
