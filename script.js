@@ -23,7 +23,87 @@ var lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere
 			+ "tristique lacinia neque ipsum nec libero. Maecenas pellentesque, magna id faucibus consequat, nisi libero pharetra nulla, in vehicula sapien nisi imperdiet justo."
 			+ "Proin vestibulum purus quam, ut dictum elit interdum id. Curabitur ut pretium tortor. Duis vehicula aliquam quam egestas semper. Quisque bibendum nulla in commodo efficitur."
 			+ "Vivamus vehicula ligula id consectetur feugiat.";
-var map;
+var searchMap;
+
+var cathedralMaps = [];
+
+var mapStyle = [
+				   {
+				      "featureType":"poi",
+				      "elementType":"labels.text",
+				      "stylers":[
+				         {
+				            "visibility":"off"
+				         }
+				      ]
+				   },
+				   {
+				      "featureType":"road",
+				      "elementType":"labels.icon",
+				      "stylers":[
+				         {
+				            "visibility":"off"
+				         }
+				      ]
+				   },
+				   {
+				      "featureType":"administrative",
+				      "elementType":"labels.text.fill",
+				      "stylers":[
+				         {
+				            "color":"#606060"
+				         }
+				      ]
+				   },
+				   {
+				      "featureType":"administrative.locality",
+				      "elementType":"labels.icon",
+				      "stylers":[
+				         {
+				            "visibility":"off"
+				         }
+				      ]
+				   },
+				   {
+				      "featureType":"water",
+				      "elementType":"geometry",
+				      "stylers":[
+				         {
+				            "visibility":"on"
+				         },
+				         {
+				            "color":"#C6E2FF"
+				         }
+				      ]
+				   },
+				   {
+				      "featureType":"poi",
+				      "elementType":"geometry.fill",
+				      "stylers":[
+				         {
+				            "color":"#C5E3BF"
+				         }
+				      ]
+				   },
+				   {
+				      "featureType":"road",
+				      "elementType":"geometry",
+				      "stylers":[
+				         {
+				            "visibility":"off"
+				         }
+				      ]
+				   },
+				   {
+				      "featureType":"administrative",
+				      "elementType":"geometry",
+				      "stylers":[
+				         {
+				            "visibility":"off"
+				         }
+				      ]
+				   }
+				]
 
 var posts = []; 
 
@@ -89,7 +169,7 @@ function init(){
 	})
 
 	window.addEventListener('resize', function(){ 
-        google.maps.event.trigger(map, 'resize'); 
+        google.maps.event.trigger(searchMap, 'resize'); 
         resizeToWindow();
       }, false);
 
@@ -167,7 +247,6 @@ function processAllPanos(panoList, numFound){
 	appendInOrder = []; 
 	for (var i in panoList){
 		var pano = panoList[i];
-		console.log(panoTitle);
 		var panoTitle = pano["dc.title_s"][0]; 
 		var panoID = pano.PID.split("gothic:")[1]; 
 		panoIDList.push(pano.PID);
@@ -246,7 +325,7 @@ function clickCathedral(input){
 function makeCathedralPost(title, cathedralID){
 	var postHTML = []; 
 	postHTML.push('<div class="post">');
-	postHTML.push('<a name="'+ title.split(' ').join('_') + '"></a>');
+	postHTML.push('<a class="hash-link" name="'+ title.split(' ').join('_') + '"></a>');
 	postHTML.push('<div class="title">');
 	postHTML.push('<div class="cathedral-icon"></div>');
 	postHTML.push('<p>' + title + '</p>')
@@ -280,7 +359,13 @@ function makeCathedralPost(title, cathedralID){
 	var postRef = $(postHTML.join(""));
 
 	$("#posts").append(postRef);
+
+	var mapDiv = $(postRef).find('.google-maps')[0]; 
+
+	var cathMap = initializeCathedralMap(mapDiv);
+
 	checkPostsDisplay();
+
 	var linkHTML = [];
 	linkHTML.push('<li>');
 	linkHTML.push('<a href="#' + title.split(' ').join('_') + '">'); 
@@ -304,7 +389,8 @@ function makeCathedralPost(title, cathedralID){
 			var pano = panoList[i];
 			var panoID = pano.PID.split("gothic:")[1];
 			var panoTitle = pano["dc.title_s"][0]; 
-			$($panoList).append('<li data-pid="' + panoList[i] + '" >' + panoTitle + '</li>');
+			var tileLink = $('<li data-pid="' + panoID + '" data-title="' + panoTitle + '">' + panoTitle + '</li>');
+			$($panoList).append(tileLink);
 			var tile = $('<div class="tile" '
 				+ 'data-pid="' + panoID
 				+ '" data-title="' + panoTitle
@@ -312,6 +398,14 @@ function makeCathedralPost(title, cathedralID){
 				+ '" alt="'+ panoTitle + '"/>'
 				+ '<div class="hover-text"><p>' + panoTitle + '</p></div></div>'); 
 			$($panoTilesDiv).append(tile);
+
+			$(tileLink).click(function(event){
+				//makePanoPost(event.currentTarget.dataset.title, event.currentTarget.dataset.pid);
+			}); 
+
+			$(tile).click(function(event){
+				//makePanoPost(event.currentTarget.dataset.title, event.currentTarget.dataset.pid);
+			}); 
 		}
 	})
 
@@ -344,7 +438,7 @@ function makeCathedralPost(title, cathedralID){
 function makePanoPost(title, panoID){
 	var postHTML = []; 
 	postHTML.push('<div class="post">');
-	postHTML.push('<a name="'+ title.split(' ').join('_') + '"></a>');
+	postHTML.push('<a class="hash-link" name="'+ title.split(' ').join('_') + '"></a>');
 	postHTML.push('<div class="title">');
 	postHTML.push('<div class="pano-icon"></div>');
 	postHTML.push('<p>' + title + '</p>')
@@ -366,8 +460,12 @@ function makePanoPost(title, panoID){
 	postHTML.push('</div>');
 	var postRef = $(postHTML.join(""));
 
-
 	$("#posts").append(postRef);
+
+	var mapDiv = $(postRef).find('.google-maps')[0]; 
+
+	var cathMap = initializeCathedralMap(mapDiv);
+
 	checkPostsDisplay();
 	var linkHTML = [];
 	linkHTML.push('<li>');
@@ -449,95 +547,42 @@ function switchTabs(element){
 	var $restTab = $currentTab.siblings('.tab-content').not($currentTab); 
 	$($currentTab).show();
 	$($restTab).hide();
+	resizeMaps()
 }
 
-function initializeGoogleMaps(){
-	 var mapStyle = [
-					   {
-					      "featureType":"poi",
-					      "elementType":"labels.text",
-					      "stylers":[
-					         {
-					            "visibility":"off"
-					         }
-					      ]
-					   },
-					   {
-					      "featureType":"road",
-					      "elementType":"labels.icon",
-					      "stylers":[
-					         {
-					            "visibility":"off"
-					         }
-					      ]
-					   },
-					   {
-					      "featureType":"administrative",
-					      "elementType":"labels.text.fill",
-					      "stylers":[
-					         {
-					            "color":"#606060"
-					         }
-					      ]
-					   },
-					   {
-					      "featureType":"administrative.locality",
-					      "elementType":"labels.icon",
-					      "stylers":[
-					         {
-					            "visibility":"off"
-					         }
-					      ]
-					   },
-					   {
-					      "featureType":"water",
-					      "elementType":"geometry",
-					      "stylers":[
-					         {
-					            "visibility":"on"
-					         },
-					         {
-					            "color":"#C6E2FF"
-					         }
-					      ]
-					   },
-					   {
-					      "featureType":"poi",
-					      "elementType":"geometry.fill",
-					      "stylers":[
-					         {
-					            "color":"#C5E3BF"
-					         }
-					      ]
-					   },
-					   {
-					      "featureType":"road",
-					      "elementType":"geometry",
-					      "stylers":[
-					         {
-					            "visibility":"off"
-					         }
-					      ]
-					   },
-					   {
-					      "featureType":"administrative",
-					      "elementType":"geometry",
-					      "stylers":[
-					         {
-					            "visibility":"off"
-					         }
-					      ]
-					   }
-					]
+function initializeSearchMap(){
+
 	var mapCanvas = document.getElementsByClassName('google-maps')[0];
 	var mapOptions = {
   		center: new google.maps.LatLng(47, 3),
   		zoom: 4,
   		styles: mapStyle,
 	}
-	map = new google.maps.Map(mapCanvas, mapOptions); 
+	searchMap = new google.maps.Map(mapCanvas, mapOptions); 
+}
+
+function initializeCathedralMap(mapDiv){
+	var mapCanvas = mapDiv; 
+	var mapOptions = {
+		center: new google.maps.LatLng(47, 3),
+  		zoom: 4,
+  		styles: mapStyle,
+	}
+
+	var map = new google.maps.Map(mapCanvas, mapOptions); 
+
+	cathedralMaps.push(map); 
+
+	return map;
+}
+
+function resizeMaps(){
+	for(var i = 0; i < cathedralMaps.length; i++){
+		google.maps.event.trigger(cathedralMaps[i], 'resize');
+		cathedralMaps[i].setCenter(new google.maps.LatLng(47, 3)); 
+	}
 }
 
 $(init);
 
-google.maps.event.addDomListener(window, 'load', initializeGoogleMaps);
+google.maps.event.addDomListener(window, 'load', initializeSearchMap);
