@@ -1,4 +1,17 @@
-var PANO_URL = "http://digitallibrary.vassar.edu/panorama_krpano_embed/";
+
+/* TO DO:
+ * - when you click on a tile in cathedral post, it detects if a post already exists and jumps to that location 
+ *   and if that post doesn't exist, will check the input box of that post and create a new post
+ *
+ */
+
+/*******************************************************************************
+                            GLOBAL VARIABLES
+ ******************************************************************************/
+
+//~~~~~~~~~~~~~~~~~~~~~~~ SOLR SEARCH VARIABLES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+var PANO_URL = "http://digitallibrary.vassar.edu/panorama_krpano_embed/";    
 var SOLR_URL = "http://dg02.vassar.edu:8080/solr/select";
 
 var THUMBNAIL_BEGIN = "http://digitallibrary.vassar.edu/islandora/object/";
@@ -16,18 +29,27 @@ var ALL_CATHEDRALS = ALL_GOTHIC + " AND " + ACTIVE_CATHEDRALS;
 var PANO_ID = "PID"; 
 var PARENT_DIR = "PARENT_collection_s:";
 
-var panoIDList = []; 
-var cathedralNameList = [];
+
+//~~~~~~~~~~~~~~~~~~~~~~ CACHE ARRAYS and VALUES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+var panoIDList = [];                   //list of all Pano IDs 
+var cathedralIDList = [];              //list of all Cathedral IDs
+var cathedralMaps = [];		           //list of all Cathedral Maps
+var posts = []; 			           //list of all current posts 
+var totalNumPanos, totalNumCathedrals; //total number of panos, cathedral
+
 var lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere malesuada leo eget pellentesque. Praesent hendrerit tincidunt velit imperdiet commodo. "
 			+ "In porttitor luctus justo sit amet ultricies. Sed vulputate velit ac feugiat iaculis. Nullam lacinia, elit quis pretium molestie, est purus accumsan orci,"
 			+ "tristique lacinia neque ipsum nec libero. Maecenas pellentesque, magna id faucibus consequat, nisi libero pharetra nulla, in vehicula sapien nisi imperdiet justo."
 			+ "Proin vestibulum purus quam, ut dictum elit interdum id. Curabitur ut pretium tortor. Duis vehicula aliquam quam egestas semper. Quisque bibendum nulla in commodo efficitur."
 			+ "Vivamus vehicula ligula id consectetur feugiat.";
-var searchMap;
 
-var cathedralMaps = [];
+//~~~~~~~~~~~~~~~~~~~~~~ MAP VARIABLES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-var mapStyle = [
+var searchMap; //main map on screen
+
+//map style
+var mapStyle = [ 
 				   {
 				      "featureType":"poi",
 				      "elementType":"labels.text",
@@ -105,17 +127,19 @@ var mapStyle = [
 				   }
 				]
 
-var posts = []; 
 
-var totalNumPanos, totalNumCathedrals; 
-
+/**
+ * Init function, called after body load. 
+ * @param none
+ * @return none
+ */
 function init(){
 	resizeToWindow();
-	// processPosts("https://api.myjson.com/bins/4xbsi");
 	checkPostsDisplay();
 	processSolrJSON(ALL_PANOS, processAllPanos);
 	processSolrJSON(ALL_CATHEDRALS, processAllCathedrals);
 
+	//calls searchAttributes while typing 
 	var timer = null; 
    	$('#search-bar').keyup(function(){
       	if ($('#search-bar').val() == ""){
@@ -169,12 +193,19 @@ function init(){
 	})
 
 	window.addEventListener('resize', function(){ 
-        google.maps.event.trigger(searchMap, 'resize'); 
+        google.maps.event.trigger(searchMap, 'resize');
         resizeToWindow();
+        resizeMaps();
       }, false);
 
 }
 
+
+/**
+ * Edits css of certain elements based on the current window width 
+ * @param none
+ * @return none
+ */
 function resizeToWindow(){
 	
 	var winWidth = $(window).width()
@@ -188,6 +219,11 @@ function resizeToWindow(){
 	}
 }
 
+/**
+ * Searches Solr Gothic namespace based on the current value in the search bar  
+ * @param none
+ * @return none
+ */
 function searchAttributes(){
 	 var str = $('#search-bar').val();   
 	 if(str.length == 0){
@@ -213,16 +249,12 @@ function searchAttributes(){
      }
 }
 
-//FOR TESTER JSONS
-// function processPosts(url){
-// 	$.getJSON(url, function(data){
-// 		for (var i = 0; i < data.panoramas.length; i++) {
-// 			var pano = data.panoramas[i]; 
-// 			makePanoPost(pano.title, pano.PID.split("gothic:"));
-// 		};
-// 	});
-// }
-
+/**
+ * Calls Solr Engine for search return JSON and passes JSON into the callback handler
+ * @param {string} search The parameters to search SOLR with 
+ * @param {functoin} handler The callback function to process the JSON with 
+ * @return none 
+ */
 function processSolrJSON(search, handler){
 	$.ajax({
 		'url': SOLR_URL,
@@ -243,6 +275,11 @@ function processSolrJSON(search, handler){
 	});
 }
 
+/**
+ * Callback Handler for processing JSON containing all found panoramas currently in database
+ * @param {array} panoList List of all panoramas currently in database 
+ * @return {number} numFound number of elements found in search
+ */
 function processAllPanos(panoList, numFound){
 	appendInOrder = []; 
 	for (var i in panoList){
@@ -262,12 +299,18 @@ function processAllPanos(panoList, numFound){
 	$('#pano-showing-total').replaceWith('<span id="pano-showing-total">Showing: <span class="avoidWrapping">' + totalNumPanos + ' of ' + totalNumPanos + '</span></span>');
 }
 
+/**
+ * Callback Handler for processing JSON containing all found cathedrals currently in database
+ * @param {array} cathedralList List of all cathedrals currently in database 
+ * @return {number} numFound number of elements found in search
+ */
 function processAllCathedrals(cathedralList, numFound){
 	appendInOrder = []; 
 	for (var i in cathedralList){
 		var cathedral = cathedralList[i];
 		var cathedralTitle = cathedral["dc.title_s"][0]; 
-		var cathedralID = cathedral.PID.split("gothic:")[1]; 
+		var cathedralID = cathedral.PID.split("gothic:")[1];
+		cathedralIDList.push(cathedralID);
 		appendInOrder.push('<label class="cathedral-label result-list-elements nohighlight"><li><input class="cathedral-checkbox" type="checkbox" data-title="' + cathedralTitle +
 			'" data-id="'+ cathedralID + '" onclick=clickCathedral(this)><div class="custom-checkbox"></div><p>' + cathedralTitle.split('_').join(' ') + '</p></li></label>');
 	}
@@ -281,6 +324,11 @@ function processAllCathedrals(cathedralList, numFound){
 	$('#cathedral-showing-total').replaceWith('<span id="cathedral-showing-total">Showing: <span class="avoidWrapping">' + totalNumCathedrals + ' of ' + totalNumCathedrals + '</span></span>');
 }
 
+/**
+ * Callback Handler for processing JSON containing found panoramas returned by the search
+ * @param {array} panoList List of panoramas found by search in database 
+ * @return {number} numFound number of elements found in search
+ */
 function processPanoSearch(panoList, numFound){
 	$('.pano-label').hide(); 
 
@@ -292,6 +340,11 @@ function processPanoSearch(panoList, numFound){
 	$('#pano-showing-total').replaceWith('<span id="pano-showing-total">Showing: <span class="avoidWrapping">' + numFound + ' of ' + totalNumPanos + '</span></span>');
 }
 
+/**
+ * Callback Handler for processing JSON containing found cathedrals returned by the search
+ * @param {array} cathedralList List of cathedrals found by search in database 
+ * @return {number} numFound number of elements found in search
+ */
 function processCathedralSearch(cathedralList, numFound){
 	$('.cathedral-label').hide(); 
 
@@ -303,7 +356,10 @@ function processCathedralSearch(cathedralList, numFound){
 	$('#cathedral-showing-total').replaceWith('<span id="cathedral-showing-total">Showing: <span class="avoidWrapping">' + numFound + ' of ' + totalNumCathedrals + '</span></span>');
 }
 
-
+/**
+ * Opens up a panorama window when clicked on in search table
+ * @param {input element} input Input element clicked on
+ */
 function clickPano(input){
 	if(input.checked) {
         makePanoPost(input.dataset.title, input.dataset.id); 
@@ -312,6 +368,10 @@ function clickPano(input){
       }
 }
 
+/**
+ * Opens up a cathedral window when clicked on in search table
+ * @param {input element} input Input element clicked on
+ */
 function clickCathedral(input){
 	if(input.checked){
 		makeCathedralPost(
@@ -322,6 +382,92 @@ function clickCathedral(input){
 	}
 }
 
+/**
+ * Makes a panorama post and appends it to the document
+ * @param {string} title The title of the panorama 
+ * @param {string} panoID The pano ID of the panorama 
+ */
+function makePanoPost(title, panoID){
+	var postHTML = []; 
+	postHTML.push('<div class="post">');
+	postHTML.push('<a class="hash-link" name="'+ title.split(' ').join('_') + '"></a>');
+	postHTML.push('<div class="title">');
+	postHTML.push('<div class="pano-icon"></div>');
+	postHTML.push('<p>' + title + '</p>')
+	postHTML.push('<div class="button x-button nohighlight">&times</div>'); 
+	postHTML.push('<div class="button min-button nohighlight">&#8722</div>'); 
+	postHTML.push('</div>')
+	postHTML.push('<div class="content-area">');
+	postHTML.push('<div class="tab-bar">');
+	postHTML.push('<div class="tab pano selected nohighlight" data-tab="panorama"><p>Panorama</p></div>');
+	postHTML.push('<div class="tab info nohighlight" data-tab="information"><p>Information</p></div>');
+	postHTML.push('</div>');
+	postHTML.push('<iframe class="panorama tab-content" src="' + PANO_URL + GOTHIC_NAMESPACE + panoID + '" allowFullScreen></iframe>');
+	postHTML.push('<div class="information tab-content" style="display: none;">');
+	postHTML.push('<div class="google-maps tab-content"></div>'); 
+	postHTML.push('<h2>About the ' + title + '</h2>');
+	postHTML.push('<p>' + lorem + '</p>');
+	postHTML.push('</div>'); 
+	postHTML.push('</div>'); 
+	postHTML.push('</div>');
+	var postRef = $(postHTML.join(""));
+
+	$("#posts").append(postRef);
+
+	var mapDiv = $(postRef).find('.google-maps')[0]; 
+
+	var cathMap = initializeCathedralMap(mapDiv);
+
+	checkPostsDisplay();
+	var linkHTML = [];
+	linkHTML.push('<li>');
+	linkHTML.push('<a href="#' + title.split(' ').join('_') + '">'); 
+	linkHTML.push('<h2>' + title + '</h2>'); 
+	linkHTML.push('</a></li>');
+	var linkRef = $(linkHTML.join(""));
+	
+	$("#contents > ul").append(linkRef);
+
+	posts.push({
+		title : title,
+		id : panoID,
+		postRef : postRef,
+		linkRef : linkRef,
+	})
+
+
+	$(postRef).find(".x-button").click(function(){
+		removePost(panoID);
+	})
+
+	var minButton = $(postRef).find(".min-button");
+
+	$(minButton).click(function(){
+		var postContent = $(postRef).find(".content-area"); 
+		if ($(postContent).is(":visible")){
+			$(postRef).height("50px");
+			$(minButton).children().html("&#43");
+		}else{
+			$(postRef).height("75%");
+			$(minButton).children().html("&#8722");
+		}
+
+		$(postContent).toggle();
+	});
+
+	var tabs = $(postRef).find(".tab");
+
+	$(tabs).click(function(event){
+		tabSelect(event.currentTarget);
+	});
+
+}
+
+/**
+ * Makes a cathedral post and appends it to the document
+ * @param {string} title The title of the cathedral
+ * @param {string} panoID The pano ID of the cathedral
+ */
 function makeCathedralPost(title, cathedralID){
 	var postHTML = []; 
 	postHTML.push('<div class="post">');
@@ -400,11 +546,11 @@ function makeCathedralPost(title, cathedralID){
 			$($panoTilesDiv).append(tile);
 
 			$(tileLink).click(function(event){
-				//makePanoPost(event.currentTarget.dataset.title, event.currentTarget.dataset.pid);
+				makePanoPost(event.currentTarget.dataset.title, event.currentTarget.dataset.pid);
 			}); 
 
 			$(tile).click(function(event){
-				//makePanoPost(event.currentTarget.dataset.title, event.currentTarget.dataset.pid);
+				makePanoPost(event.currentTarget.dataset.title, event.currentTarget.dataset.pid);
 			}); 
 		}
 	})
@@ -435,96 +581,39 @@ function makeCathedralPost(title, cathedralID){
 	});
 }
 
-function makePanoPost(title, panoID){
-	var postHTML = []; 
-	postHTML.push('<div class="post">');
-	postHTML.push('<a class="hash-link" name="'+ title.split(' ').join('_') + '"></a>');
-	postHTML.push('<div class="title">');
-	postHTML.push('<div class="pano-icon"></div>');
-	postHTML.push('<p>' + title + '</p>')
-	postHTML.push('<div class="button x-button nohighlight">&times</div>'); 
-	postHTML.push('<div class="button min-button nohighlight">&#8722</div>'); 
-	postHTML.push('</div>')
-	postHTML.push('<div class="content-area">');
-	postHTML.push('<div class="tab-bar">');
-	postHTML.push('<div class="tab pano selected nohighlight" data-tab="panorama"><p>Panorama</p></div>');
-	postHTML.push('<div class="tab info nohighlight" data-tab="information"><p>Information</p></div>');
-	postHTML.push('</div>');
-	postHTML.push('<iframe class="panorama tab-content" src="' + PANO_URL + GOTHIC_NAMESPACE + panoID + '" allowFullScreen></iframe>');
-	postHTML.push('<div class="information tab-content" style="display: none;">');
-	postHTML.push('<div class="google-maps tab-content"></div>'); 
-	postHTML.push('<h2>About the ' + title + '</h2>');
-	postHTML.push('<p>' + lorem + '</p>');
-	postHTML.push('</div>'); 
-	postHTML.push('</div>'); 
-	postHTML.push('</div>');
-	var postRef = $(postHTML.join(""));
-
-	$("#posts").append(postRef);
-
-	var mapDiv = $(postRef).find('.google-maps')[0]; 
-
-	var cathMap = initializeCathedralMap(mapDiv);
-
-	checkPostsDisplay();
-	var linkHTML = [];
-	linkHTML.push('<li>');
-	linkHTML.push('<a href="#' + title.split(' ').join('_') + '">'); 
-	linkHTML.push('<h2>' + title + '</h2>'); 
-	linkHTML.push('</a></li>');
-	var linkRef = $(linkHTML.join(""));
-	
-	$("#contents > ul").append(linkRef);
-
-	posts.push({
-		title : title,
-		id : panoID,
-		postRef : postRef,
-		linkRef : linkRef,
-	})
-
-
-	$(postRef).find(".x-button").click(function(){
-		removePost(panoID);
-	})
-
-	var minButton = $(postRef).find(".min-button");
-
-	$(minButton).click(function(){
-		var postContent = $(postRef).find(".content-area"); 
-		if ($(postContent).is(":visible")){
-			$(postRef).height("50px");
-			$(minButton).children().html("&#43");
-		}else{
-			$(postRef).height("75%");
-			$(minButton).children().html("&#8722");
-		}
-
-		$(postContent).toggle();
-	});
-
-	var tabs = $(postRef).find(".tab");
-
-	$(tabs).click(function(event){
-		tabSelect(event.currentTarget);
-	});
-
-}
-
-function removePost(panoID){
-	for (var i = 0, len = posts.length; i < len; i++){
+/**
+ * Checks if a post already exists 
+ * @param {string} the pano ID of the post 
+ * @return {number} index in posts array or -1 if does not exist
+ */
+function isPost(panoID){
+ 	for (var i = 0, len = posts.length; i < len; i++){
 		if (posts[i].id == panoID){
-			$(posts[i].postRef).remove();
-			$(posts[i].linkRef).remove();
-			posts.splice(i, 1);
-			break;
+			return i; 
 		}
 	}
-
-	$('input[data-id="'+ panoID + '"]').prop('checked', false);
-	checkPostsDisplay();
+	return -1; 
 }
 
+/**
+ * Removes a post from the document
+ * @param {string} the pano ID of the post  
+ */
+function removePost(panoID){
+	var i = isPost(panoID);
+	if(i >= 0){
+		$(posts[i].postRef).remove();
+		$(posts[i].linkRef).remove();
+		posts.splice(i, 1);
+		$('input[data-id="'+ panoID + '"]').prop('checked', false);
+		checkPostsDisplay();
+	}
+}
+
+/**
+ * Hides the #posts div if there are no posts in the posts area
+ * @param none 
+ */
 function checkPostsDisplay(){
 	if($('#posts').children().length == 0){
 		$('#posts').hide();
@@ -533,7 +622,11 @@ function checkPostsDisplay(){
 	}
 }
 
-
+/**
+ * Determines which tab is currently selected in a post and gives that tab 
+ * a class of selected
+ * @param {div} element The div tab element
+ */
 function tabSelect(element){
 	if(!$(element).hasClass('selected')){
 		$(element).siblings('.selected').removeClass('selected');
@@ -542,6 +635,10 @@ function tabSelect(element){
 	}
 }
 
+/**
+ * switches tab to the tab with class selected 
+ * @param {div} element The div tab element
+ */
 function switchTabs(element){
 	var $currentTab = $(element).parent().siblings('.' + element.dataset.tab); 
 	var $restTab = $currentTab.siblings('.tab-content').not($currentTab); 
@@ -550,6 +647,10 @@ function switchTabs(element){
 	resizeMaps()
 }
 
+/**
+ * Initializes the main search map 
+ * @param none
+ */
 function initializeSearchMap(){
 
 	var mapCanvas = document.getElementsByClassName('google-maps')[0];
@@ -561,6 +662,10 @@ function initializeSearchMap(){
 	searchMap = new google.maps.Map(mapCanvas, mapOptions); 
 }
 
+/**
+ * Initializes map within each cathedral information post
+ * @param {dic} mapDiv The div for containing the map 
+ */
 function initializeCathedralMap(mapDiv){
 	var mapCanvas = mapDiv; 
 	var mapOptions = {
@@ -576,6 +681,10 @@ function initializeCathedralMap(mapDiv){
 	return map;
 }
 
+/**
+ * Resizes all the maps currently initialized in posts 
+ * @param {dic} mapDiv The div for containing the map 
+ */
 function resizeMaps(){
 	for(var i = 0; i < cathedralMaps.length; i++){
 		google.maps.event.trigger(cathedralMaps[i], 'resize');
