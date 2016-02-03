@@ -2,7 +2,8 @@
 /* TO DO:
  * - when you click on a tile in cathedral post, it detects if a post already exists and jumps to that location 
  *   and if that post doesn't exist, will check the input box of that post and create a new post
- *
+ * - When you click on a panorama in cathedral post, then scroll, then click again, will not jump back
+ * - Back to Top Button in Side Bar
  */
 
 /*******************************************************************************
@@ -388,79 +389,87 @@ function clickCathedral(input){
  * @param {string} panoID The pano ID of the panorama 
  */
 function makePanoPost(title, panoID){
-	var postHTML = []; 
-	postHTML.push('<div class="post">');
-	postHTML.push('<a class="hash-link" name="'+ title.split(' ').join('_') + '"></a>');
-	postHTML.push('<div class="title">');
-	postHTML.push('<div class="pano-icon"></div>');
-	postHTML.push('<p>' + title + '</p>')
-	postHTML.push('<div class="button x-button nohighlight">&times</div>'); 
-	postHTML.push('<div class="button min-button nohighlight">&#8722</div>'); 
-	postHTML.push('</div>')
-	postHTML.push('<div class="content-area">');
-	postHTML.push('<div class="tab-bar">');
-	postHTML.push('<div class="tab pano selected nohighlight" data-tab="panorama"><p>Panorama</p></div>');
-	postHTML.push('<div class="tab info nohighlight" data-tab="information"><p>Information</p></div>');
-	postHTML.push('</div>');
-	postHTML.push('<iframe class="panorama tab-content" src="' + PANO_URL + GOTHIC_NAMESPACE + panoID + '" allowFullScreen></iframe>');
-	postHTML.push('<div class="information tab-content" style="display: none;">');
-	postHTML.push('<div class="google-maps tab-content"></div>'); 
-	postHTML.push('<h2>About the ' + title + '</h2>');
-	postHTML.push('<p>' + lorem + '</p>');
-	postHTML.push('</div>'); 
-	postHTML.push('</div>'); 
-	postHTML.push('</div>');
-	var postRef = $(postHTML.join(""));
+	var i = isPost(panoID); 
+	if(i >= 0){
+		location.hash = "#" + title.split(' ').join('_');
+	}else{
+		$('.pano-checkbox').filter(function() { 
+  				return $(this).data("id") == panoID;
+		}).prop( "checked", true );
 
-	$("#posts").append(postRef);
+		var postHTML = []; 
+		postHTML.push('<div class="post">');
+		postHTML.push('<a class="hash-link" name="'+ title.split(' ').join('_') + '"></a>');
+		postHTML.push('<div class="title">');
+		postHTML.push('<div class="pano-icon"></div>');
+		postHTML.push('<p>' + title + '</p>')
+		postHTML.push('<div class="button x-button nohighlight">&times</div>'); 
+		postHTML.push('<div class="button min-button nohighlight">&#8722</div>'); 
+		postHTML.push('</div>')
+		postHTML.push('<div class="content-area">');
+		postHTML.push('<div class="tab-bar">');
+		postHTML.push('<div class="tab pano selected nohighlight" data-tab="panorama"><p>Panorama</p></div>');
+		postHTML.push('<div class="tab info nohighlight" data-tab="information"><p>Information</p></div>');
+		postHTML.push('</div>');
+		postHTML.push('<iframe class="panorama tab-content" src="' + PANO_URL + GOTHIC_NAMESPACE + panoID + '" allowFullScreen></iframe>');
+		postHTML.push('<div class="information tab-content" style="display: none;">');
+		postHTML.push('<div class="google-maps tab-content"></div>'); 
+		postHTML.push('<h2>About the ' + title + '</h2>');
+		postHTML.push('<p>' + lorem + '</p>');
+		postHTML.push('</div>'); 
+		postHTML.push('</div>'); 
+		postHTML.push('</div>');
+		var postRef = $(postHTML.join(""));
 
-	var mapDiv = $(postRef).find('.google-maps')[0]; 
+		$("#posts").append(postRef);
 
-	var cathMap = initializeCathedralMap(mapDiv);
+		var mapDiv = $(postRef).find('.google-maps')[0]; 
 
-	checkPostsDisplay();
-	var linkHTML = [];
-	linkHTML.push('<li>');
-	linkHTML.push('<a href="#' + title.split(' ').join('_') + '">'); 
-	linkHTML.push('<h2>' + title + '</h2>'); 
-	linkHTML.push('</a></li>');
-	var linkRef = $(linkHTML.join(""));
-	
-	$("#contents > ul").append(linkRef);
+		var cathMap = initializeCathedralMap(mapDiv);
 
-	posts.push({
-		title : title,
-		id : panoID,
-		postRef : postRef,
-		linkRef : linkRef,
-	})
+		checkPostsDisplay();
+		var linkHTML = [];
+		linkHTML.push('<li>');
+		linkHTML.push('<a href="#' + title.split(' ').join('_') + '">'); 
+		linkHTML.push('<h2>' + title + '</h2>'); 
+		linkHTML.push('</a></li>');
+		var linkRef = $(linkHTML.join(""));
+		
+		$("#contents > ul").append(linkRef);
+
+		posts.push({
+			title : title,
+			id : panoID,
+			postRef : postRef,
+			linkRef : linkRef,
+		})
 
 
-	$(postRef).find(".x-button").click(function(){
-		removePost(panoID);
-	})
+		$(postRef).find(".x-button").click(function(){
+			removePost(panoID);
+		})
 
-	var minButton = $(postRef).find(".min-button");
+		var minButton = $(postRef).find(".min-button");
 
-	$(minButton).click(function(){
-		var postContent = $(postRef).find(".content-area"); 
-		if ($(postContent).is(":visible")){
-			$(postRef).height("50px");
-			$(minButton).children().html("&#43");
-		}else{
-			$(postRef).height("75%");
-			$(minButton).children().html("&#8722");
-		}
+		$(minButton).click(function(){
+			var postContent = $(postRef).find(".content-area"); 
+			if ($(postContent).is(":visible")){
+				$(postRef).height("50px");
+				$(minButton).children().html("&#43");
+			}else{
+				$(postRef).height("75%");
+				$(minButton).children().html("&#8722");
+			}
 
-		$(postContent).toggle();
-	});
+			$(postContent).toggle();
+		});
 
-	var tabs = $(postRef).find(".tab");
+		var tabs = $(postRef).find(".tab");
 
-	$(tabs).click(function(event){
-		tabSelect(event.currentTarget);
-	});
-
+		$(tabs).click(function(event){
+			tabSelect(event.currentTarget);
+		});
+	}
 }
 
 /**
@@ -469,116 +478,121 @@ function makePanoPost(title, panoID){
  * @param {string} panoID The pano ID of the cathedral
  */
 function makeCathedralPost(title, cathedralID){
-	var postHTML = []; 
-	postHTML.push('<div class="post">');
-	postHTML.push('<a class="hash-link" name="'+ title.split(' ').join('_') + '"></a>');
-	postHTML.push('<div class="title">');
-	postHTML.push('<div class="cathedral-icon"></div>');
-	postHTML.push('<p>' + title + '</p>')
-	postHTML.push('<div class="button x-button nohighlight">&times</div>'); 
-	postHTML.push('<div class="button min-button nohighlight">&#8722</div>'); 
-	postHTML.push('</div>')
-	postHTML.push('<div class="content-area">');
-	postHTML.push('<div class="tab-bar">');
-	postHTML.push('<div class="tab panos selected nohighlight" data-tab="panoramas"><p>Panoramas</p></div>');
-	postHTML.push('<div class="tab info middle-tab nohighlight" data-tab="information"><p>Information</p></div>');
-	postHTML.push('<div class="tab timeline  middle-tab nohighlight" data-tab="timeline"><p>Timeline</p></div>');
-	postHTML.push('<div class="tab resources nohighlight" data-tab="resources"><p>Resources</p></div>');
-	postHTML.push('</div>');
-	postHTML.push('<div class="panoramas tab-content">');
-	postHTML.push('<div class="pano-list"><ul></ul></div>');
-	postHTML.push('<div class="pano-tiles"></div>');  
-	postHTML.push('</div>');
-	postHTML.push('<div class="information tab-content" style="display: none;">');
-	postHTML.push('<div class="google-maps"></div>'); 
-	postHTML.push('<h2>About the ' + title + '</h2>');
-	postHTML.push('<p>' + lorem + '</p>');
-	postHTML.push('</div>'); 
-	postHTML.push('<div class="timeline tab-content" style="display: none;">');
-	postHTML.push('<h2>Timeline of ' + title + '</h2>');
-	postHTML.push('</div>');
-	postHTML.push('<div class="resources tab-content" style="display: none;">');
-	postHTML.push('<h2>Resources for ' + title + '</h2>');
-	postHTML.push('</div>');  
-	postHTML.push('</div>'); 
-	postHTML.push('</div>');
-	var postRef = $(postHTML.join(""));
+	var i = isPost(cathedralID);
+	if(i >= 0){
+		location.hash = "#" + title.split(' ').join('_');
+	}else{
+		var postHTML = []; 
+		postHTML.push('<div class="post">');
+		postHTML.push('<a class="hash-link" name="'+ title.split(' ').join('_') + '"></a>');
+		postHTML.push('<div class="title">');
+		postHTML.push('<div class="cathedral-icon"></div>');
+		postHTML.push('<p>' + title + '</p>')
+		postHTML.push('<div class="button x-button nohighlight">&times</div>'); 
+		postHTML.push('<div class="button min-button nohighlight">&#8722</div>'); 
+		postHTML.push('</div>')
+		postHTML.push('<div class="content-area">');
+		postHTML.push('<div class="tab-bar">');
+		postHTML.push('<div class="tab panos selected nohighlight" data-tab="panoramas"><p>Panoramas</p></div>');
+		postHTML.push('<div class="tab info middle-tab nohighlight" data-tab="information"><p>Information</p></div>');
+		postHTML.push('<div class="tab timeline  middle-tab nohighlight" data-tab="timeline"><p>Timeline</p></div>');
+		postHTML.push('<div class="tab resources nohighlight" data-tab="resources"><p>Resources</p></div>');
+		postHTML.push('</div>');
+		postHTML.push('<div class="panoramas tab-content">');
+		postHTML.push('<div class="pano-list"><ul></ul></div>');
+		postHTML.push('<div class="pano-tiles"></div>');  
+		postHTML.push('</div>');
+		postHTML.push('<div class="information tab-content" style="display: none;">');
+		postHTML.push('<div class="google-maps"></div>'); 
+		postHTML.push('<h2>About the ' + title + '</h2>');
+		postHTML.push('<p>' + lorem + '</p>');
+		postHTML.push('</div>'); 
+		postHTML.push('<div class="timeline tab-content" style="display: none;">');
+		postHTML.push('<h2>Timeline of ' + title + '</h2>');
+		postHTML.push('</div>');
+		postHTML.push('<div class="resources tab-content" style="display: none;">');
+		postHTML.push('<h2>Resources for ' + title + '</h2>');
+		postHTML.push('</div>');  
+		postHTML.push('</div>'); 
+		postHTML.push('</div>');
+		var postRef = $(postHTML.join(""));
 
-	$("#posts").append(postRef);
+		$("#posts").append(postRef);
 
-	var mapDiv = $(postRef).find('.google-maps')[0]; 
+		var mapDiv = $(postRef).find('.google-maps')[0]; 
 
-	var cathMap = initializeCathedralMap(mapDiv);
+		var cathMap = initializeCathedralMap(mapDiv);
 
-	checkPostsDisplay();
+		checkPostsDisplay();
 
-	var linkHTML = [];
-	linkHTML.push('<li>');
-	linkHTML.push('<a href="#' + title.split(' ').join('_') + '">'); 
-	linkHTML.push('<h2>' + title + '</h2>'); 
-	linkHTML.push('</a></li>');
-	var linkRef = $(linkHTML.join(""));
-	
-	$("#contents > ul").append(linkRef);
+		var linkHTML = [];
+		linkHTML.push('<li>');
+		linkHTML.push('<a href="#' + title.split(' ').join('_') + '">'); 
+		linkHTML.push('<h2>' + title + '</h2>'); 
+		linkHTML.push('</a></li>');
+		var linkRef = $(linkHTML.join(""));
+		
+		$("#contents > ul").append(linkRef);
 
-	posts.push({
-		title : title,
-		id : cathedralID,
-		postRef : postRef,
-		linkRef : linkRef,
-	}); 
+		posts.push({
+			title : title,
+			id : cathedralID,
+			postRef : postRef,
+			linkRef : linkRef,
+		}); 
 
-	processSolrJSON(ALL_PANOS + ' AND ' + PARENT_DIR + '"' + title + '"' , function(panoList, numFound){
-		$panoTilesDiv = $(postRef).find(".pano-tiles"); 
-		$panoList = $($panoTilesDiv).siblings('.pano-list').find('ul'); 
-		for (var i in panoList){
-			var pano = panoList[i];
-			var panoID = pano.PID.split("gothic:")[1];
-			var panoTitle = pano["dc.title_s"][0]; 
-			var tileLink = $('<li data-pid="' + panoID + '" data-title="' + panoTitle + '">' + panoTitle + '</li>');
-			$($panoList).append(tileLink);
-			var tile = $('<div class="tile" '
-				+ 'data-pid="' + panoID
-				+ '" data-title="' + panoTitle
-				+ '" > <img src="' + THUMBNAIL_BEGIN + GOTHIC_NAMESPACE + panoID + THUMBNAIL_END 
-				+ '" alt="'+ panoTitle + '"/>'
-				+ '<div class="hover-text"><p>' + panoTitle + '</p></div></div>'); 
-			$($panoTilesDiv).append(tile);
+		processSolrJSON(ALL_PANOS + ' AND ' + PARENT_DIR + '"' + title + '"' , function(panoList, numFound){
+			$panoTilesDiv = $(postRef).find(".pano-tiles"); 
+			$panoList = $($panoTilesDiv).siblings('.pano-list').find('ul'); 
+			for (var i in panoList){
+				var pano = panoList[i];
+				var panoID = pano.PID.split("gothic:")[1];
+				var panoTitle = pano["dc.title_s"][0]; 
+				var tileLink = $('<li data-pid="' + panoID + '" data-title="' + panoTitle + '">' + panoTitle + '</li>');
+				$($panoList).append(tileLink);
+				var tile = $('<div class="tile" '
+					+ 'data-pid="' + panoID
+					+ '" data-title="' + panoTitle
+					+ '" > <img src="' + THUMBNAIL_BEGIN + GOTHIC_NAMESPACE + panoID + THUMBNAIL_END 
+					+ '" alt="'+ panoTitle + '"/>'
+					+ '<div class="hover-text"><p>' + panoTitle + '</p></div></div>'); 
+				$($panoTilesDiv).append(tile);
 
-			$(tileLink).click(function(event){
-				makePanoPost(event.currentTarget.dataset.title, event.currentTarget.dataset.pid);
-			}); 
+				$(tileLink).click(function(event){
+					makePanoPost(event.currentTarget.dataset.title, event.currentTarget.dataset.pid);
+				}); 
 
-			$(tile).click(function(event){
-				makePanoPost(event.currentTarget.dataset.title, event.currentTarget.dataset.pid);
-			}); 
-		}
-	})
+				$(tile).click(function(event){
+					makePanoPost(event.currentTarget.dataset.title, event.currentTarget.dataset.pid);
+				}); 
+			}
+		})
 
-	$(postRef).find(".x-button").click(function(){
-		removePost(cathedralID);
-	})
+		$(postRef).find(".x-button").click(function(){
+			removePost(cathedralID);
+		})
 
-	var minButton = $(postRef).find(".min-button");
+		var minButton = $(postRef).find(".min-button");
 
-	$(minButton).click(function(){
-		var postContent = $(postRef).find(".content-area"); 
-		if ($(postContent).is(":visible")){
-			$(postRef).height("50px");
-			$(minButton).children().html("&#43");
-		}else{
-			$(postRef).height("75%");
-			$(minButton).children().html("&#8722");
-		}
+		$(minButton).click(function(){
+			var postContent = $(postRef).find(".content-area"); 
+			if ($(postContent).is(":visible")){
+				$(postRef).height("50px");
+				$(minButton).children().html("&#43");
+			}else{
+				$(postRef).height("75%");
+				$(minButton).children().html("&#8722");
+			}
 
-		$(postContent).toggle();
-	});
+			$(postContent).toggle();
+		});
 
-	var tabs = $(postRef).find(".tab");
+		var tabs = $(postRef).find(".tab");
 
-	$(tabs).click(function(event){
-		tabSelect(event.currentTarget);
-	});
+		$(tabs).click(function(event){
+			tabSelect(event.currentTarget);
+		});
+	}
 }
 
 /**
