@@ -1,8 +1,5 @@
 
 /* TO DO:
- * - when you click on a tile in cathedral post, it detects if a post already exists and jumps to that location 
- *   and if that post doesn't exist, will check the input box of that post and create a new post
- * - When you click on a panorama in cathedral post, then scroll, then click again, will not jump back
  * - Back to Top Button in Side Bar
  */
 
@@ -135,7 +132,7 @@ var mapStyle = [
  * @return none
  */
 function init(){
-	resizeToWindow();
+	//resizeToWindow();
 	checkPostsDisplay();
 	processSolrJSON(ALL_PANOS, processAllPanos);
 	processSolrJSON(ALL_CATHEDRALS, processAllCathedrals);
@@ -195,7 +192,7 @@ function init(){
 
 	window.addEventListener('resize', function(){ 
         google.maps.event.trigger(searchMap, 'resize');
-        resizeToWindow();
+        //resizeToWindow();
         resizeMaps();
       }, false);
 
@@ -391,6 +388,9 @@ function clickCathedral(input){
 function makePanoPost(title, panoID){
 	var i = isPost(panoID); 
 	if(i >= 0){
+		if (location.hash == "#" + title.split(' ').join('_')){
+			location.hash = "";
+		}
 		location.hash = "#" + title.split(' ').join('_');
 	}else{
 		$('.pano-checkbox').filter(function() { 
@@ -480,6 +480,9 @@ function makePanoPost(title, panoID){
 function makeCathedralPost(title, cathedralID){
 	var i = isPost(cathedralID);
 	if(i >= 0){
+		if (location.hash == "#" + title.split(' ').join('_')){
+			location.hash = "";
+		}
 		location.hash = "#" + title.split(' ').join('_');
 	}else{
 		var postHTML = []; 
