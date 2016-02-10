@@ -73,7 +73,7 @@ html, body {
 
 #contents{
     height: calc(100% - 425px);
-    margin-top: 30px;
+    margin-top: 0px;
     color: white;
     overflow: auto;
 }
@@ -111,70 +111,21 @@ html, body {
 
 #toolbar{
     height: 90px;
-    margin: 0 5%;
+    width: 80%;
+    margin: 0px 10%;
     overflow: hidden;
 }
 
-#toolbar p{
-    font-size: 18px;
-    position: relative;
-    float: left;
-    width: 100px;
-    height: 30px;
-    margin: 0;
-    margin-top: 25px;
-    color: white;
-}
-
-#top-button{
-    float: left;
-    line-height: 36px;
-}
-
-#top-button:hover{
-    line-height: 31px;
-}
-
-#bottom-button{
-    float: left;
-    transform: translateY(-50%) rotate(180deg);
-    line-height: 36px !important;
-}
-
-#top-button:hover{
-    line-height: 31px;
-}
-
-#left-button{
-    float: left;
-    transform: translateY(-50%) rotate(-90deg);
-    line-height: 48px;
-}
-
-#left-button:hover{
-    line-height: 43px;
-}
-
-#right-button{
-    float: left;
-    transform: translateY(-50%) rotate(90deg);
-    line-height: 48px;
-}
-
-#right-button:hover{
-    line-height: 43px;
-}
-
 .toolbar-button{
+    float: left;
     position: relative;
     width: 40px !important;
     height: 40px;
-    margin: 0px auto !important;
+    margin: 0px calc((100% - 4*40px) / 11) !important;
     background-color: #ddd;
     border-radius: 50%;
     padding: 2px;
     top: 50%;
-    transform: translateY(-50%);
     color: #666666;
     text-align: center;
     font-size: 25px;
@@ -189,6 +140,42 @@ html, body {
 .toolbar-button a{
     color: inherit;
     text-decoration: none;
+}
+
+#top-button{
+    transform: translateY(-50%);
+    line-height: 36px;
+}
+
+#top-button:hover{
+    line-height: 31px;
+}
+
+#bottom-button{
+    transform: translateY(-50%) rotate(180deg);
+    line-height: 36px;
+}
+
+#bottom-button:hover{
+    line-height: 31px;
+}
+
+#left-button{
+    transform: translateY(-50%) rotate(-90deg);
+    line-height: 48px;
+}
+
+#left-button:hover{
+    line-height: 43px;
+}
+
+#right-button{
+    transform: translateY(-50%) rotate(90deg);
+    line-height: 48px;
+}
+
+#right-button:hover{
+    line-height: 43px;
 }
 
 .main-content{
