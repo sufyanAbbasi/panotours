@@ -132,6 +132,7 @@ var mapStyle = [
  * @return none
  */
 function init(){
+	location.hash = "";
 	//resizeToWindow();
 	checkPostsDisplay();
 	processSolrJSON(ALL_PANOS, processAllPanos);
@@ -190,11 +191,61 @@ function init(){
 		
 	})
 
+	$('#bottom-button').click(function(){
+		location.hash = "";
+		var lastHash = $('.post').last().find('a').attr('name');
+		if(typeof lastHash !== "undefined"){
+			location.hash = lastHash;
+		}
+	});
+
+	$('#right-button').click(function(){
+		var bottom = true;
+		$('.post').each(function(){
+			if($(this).offset().top >  window.pageYOffset + 50){
+				bottom = false;
+				location.hash = "";
+				location.hash = $(this).find('a').attr('name');
+				return false;
+			}
+		});
+
+		if(!bottom){
+			return false;
+		}
+
+		var lastHash = $('.post').last().find('a').attr('name');
+		if(typeof lastHash !== "undefined"){
+			location.hash = lastHash;
+		}else{
+			location.hash = 'top';
+		}
+	});
+
+	$('#left-button').click(function(){
+		var goToTop = true;
+		$($('.post').get().reverse()).each(function(){
+			if($(this).offset().top < window.pageYOffset){
+				goToTop = false;
+				location.hash = "";
+				location.hash = $(this).find('a').attr('name');
+				return false;
+			}
+		});
+
+		if(!goToTop){
+			return false;
+		}
+
+		location.hash = 'top';
+	});
+
 	window.addEventListener('resize', function(){ 
         google.maps.event.trigger(searchMap, 'resize');
         //resizeToWindow();
         resizeMaps();
       }, false);
+
 
 }
 
