@@ -21,5 +21,5 @@ To open up panoaramas, search by name using the navigation window and click on t
 Panoramas owned by Andrew Tallon.
 
 
-## Github:
+## View This On Github:
 https://github.com/sufyanAbbasi/panotours
