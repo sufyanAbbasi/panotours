@@ -1,31 +1,25 @@
 ## Synopsis
 
-At the top of the file there should be a short introduction and/ or overview that explains **what** the project is. This description should match descriptions added for package managers (Gemspec, package.json, etc.)
+PanoTours is a growing repository of Vassar College Professor Andrew Tallon's Gothic Cathedral panoramas from all over Europe. This website is built to help organize and find these panoramas, which will eventually grow to thousands of viewable panaoramas. The panoramas are held on the Vassar Library servers and query them for updates upon refresh.
 
-## Code Example
 
-Show what the library does as concisely as possible, developers should be able to figure out **how** your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
+## How to Use
 
-## Motivation
+Clone this repository and open up the index.html page on any web browser (currently optimized for Chrome and Firefox.
 
-A short description of the motivation behind the creation and maintenance of the project. This should explain **why** the project exists.
+To open up panoaramas, search by name using the navigation window and click on the boxes that come up. These will open up posts at the bottom which contain the panoramas. 
 
-## Installation
-
-Provide code examples and explanations of how to get the project.
+![Alt text](./img/navigation.png?raw=true "Navigation Window")
 
 ## API Reference
 
-Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
+[a relative link](./documentation/index.html)
 
-## Tests
-
-Describe and show how to run the tests with code examples.
-
-## Contributors
-
-Let people know how they can dive into the project, include important links to things like issue trackers, irc, twitter accounts if applicable.
 
 ## License
 
-A short snippet describing the license (MIT, Apache, etc.)
+Panoramas owned by Andrew Tallon.
+
+
+## Github:
+https://github.com/sufyanAbbasi/panotours

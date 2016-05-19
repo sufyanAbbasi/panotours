@@ -65,7 +65,7 @@ html, body {
     background-color: black;
     margin: 0px;
     background-repeat: no-repeat;
-    background-image: url(panorama_image_2.png);
+    background-image: url(./img/panorama_image_2.png);
     background-size: cover; 
     background-position: 50% 50%;
 
