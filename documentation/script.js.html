@@ -1,4 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: script.js</title>
 
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: script.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
 /* TO DO:
  * - Back to Top Button in Side Bar
  */
@@ -171,20 +199,20 @@ function init(){
 				duration: animationSpeed, 
 				queue : true, 
 			});
-			$(searchMinButton).children().html("&#43");
+			$(searchMinButton).children().html("&amp;#43");
 		}else{
 			$(searchDiv).animate({height: "50%"}, {
 				duration: animationSpeed, 
 				queue : true,
 			});
-			$(searchMinButton).children().html("&#8722");
+			$(searchMinButton).children().html("&amp;#8722");
 		}
 	});
 
 	$('#search #search-bar').focus(function(){
 		if($(searchDiv).height != 50){
 			$(searchDiv).animate({height: "50%"}, animationSpeed);
-			$(searchMinButton).children().html("&#8722");
+			$(searchMinButton).children().html("&amp;#8722");
 			$(results).slideDown({  duration: animationSpeed, 
 									queue : true});
 		}
@@ -225,7 +253,7 @@ function init(){
 	$('#left-button').click(function(){
 		var goToTop = true;
 		$($('.post').get().reverse()).each(function(){
-			if($(this).offset().top < window.pageYOffset){
+			if($(this).offset().top &lt; window.pageYOffset){
 				goToTop = false;
 				location.hash = "";
 				location.hash = $(this).find('a').attr('name');
@@ -277,15 +305,15 @@ function searchAttributes(){
 	 var str = $('#search-bar').val();   
 	 if(str.length == 0){
 	 	$('#results-list ul label').show(); 
-	 	$('#pano-showing-total').replaceWith('<span id="pano-showing-total">Showing: <span class="avoidWrapping">' + totalNumPanos + ' of ' + totalNumPanos + '</span></span>');
-	 	$('#cathedral-showing-total').replaceWith('<span id="cathedral-showing-total">Showing: <span class="avoidWrapping">' + totalNumCathedrals + ' of ' + totalNumCathedrals + '</span></span>');
+	 	$('#pano-showing-total').replaceWith('&lt;span id="pano-showing-total">Showing: &lt;span class="avoidWrapping">' + totalNumPanos + ' of ' + totalNumPanos + '&lt;/span>&lt;/span>');
+	 	$('#cathedral-showing-total').replaceWith('&lt;span id="cathedral-showing-total">Showing: &lt;span class="avoidWrapping">' + totalNumCathedrals + ' of ' + totalNumCathedrals + '&lt;/span>&lt;/span>');
 	 	return;
 	 }
 	 var wordList = str.split(" ") || [];
      var allSpaces = true;
 
      var wordSearchConditions = ""; 
-     for(var i = 0, len = wordList.length; i < len; i++){
+     for(var i = 0, len = wordList.length; i &lt; len; i++){
      	if(wordList[i].length != 0){
      		wordSearchConditions += " AND " + SEARCH_TITLE + "*" + wordList[i] + "*"; 
      		allSpaces = false;
@@ -336,8 +364,8 @@ function processAllPanos(panoList, numFound){
 		var panoTitle = pano["dc.title_s"][0]; 
 		var panoID = pano.PID.split("gothic:")[1]; 
 		panoIDList.push(pano.PID);
-		appendInOrder.push('<label class="pano-label result-list-elements nohighlight"><li><input class="pano-checkbox" type="checkbox" data-title="' + panoTitle +
-			'" data-id="'+ panoID + '" onclick=clickPano(this)><div class="custom-checkbox"></div><p>' + panoTitle.split('_').join(' ') + '</p></li></label>');
+		appendInOrder.push('&lt;label class="pano-label result-list-elements nohighlight">&lt;li>&lt;input class="pano-checkbox" type="checkbox" data-title="' + panoTitle +
+			'" data-id="'+ panoID + '" onclick=clickPano(this)>&lt;div class="custom-checkbox">&lt;/div>&lt;p>' + panoTitle.split('_').join(' ') + '&lt;/p>&lt;/li>&lt;/label>');
 		}
 
 	for(var i = appendInOrder.length - 1; i >= 0; i--){
@@ -345,7 +373,7 @@ function processAllPanos(panoList, numFound){
 	}
 	totalNumPanos = numFound;
 
-	$('#pano-showing-total').replaceWith('<span id="pano-showing-total">Showing: <span class="avoidWrapping">' + totalNumPanos + ' of ' + totalNumPanos + '</span></span>');
+	$('#pano-showing-total').replaceWith('&lt;span id="pano-showing-total">Showing: &lt;span class="avoidWrapping">' + totalNumPanos + ' of ' + totalNumPanos + '&lt;/span>&lt;/span>');
 }
 
 /**
@@ -360,8 +388,8 @@ function processAllCathedrals(cathedralList, numFound){
 		var cathedralTitle = cathedral["dc.title_s"][0]; 
 		var cathedralID = cathedral.PID.split("gothic:")[1];
 		cathedralIDList.push(cathedralID);
-		appendInOrder.push('<label class="cathedral-label result-list-elements nohighlight"><li><input class="cathedral-checkbox" type="checkbox" data-title="' + cathedralTitle +
-			'" data-id="'+ cathedralID + '" onclick=clickCathedral(this)><div class="custom-checkbox"></div><p>' + cathedralTitle.split('_').join(' ') + '</p></li></label>');
+		appendInOrder.push('&lt;label class="cathedral-label result-list-elements nohighlight">&lt;li>&lt;input class="cathedral-checkbox" type="checkbox" data-title="' + cathedralTitle +
+			'" data-id="'+ cathedralID + '" onclick=clickCathedral(this)>&lt;div class="custom-checkbox">&lt;/div>&lt;p>' + cathedralTitle.split('_').join(' ') + '&lt;/p>&lt;/li>&lt;/label>');
 	}
 
 	for(var i = appendInOrder.length - 1; i >= 0; i--){
@@ -370,7 +398,7 @@ function processAllCathedrals(cathedralList, numFound){
 
 	totalNumCathedrals = numFound; 
 
-	$('#cathedral-showing-total').replaceWith('<span id="cathedral-showing-total">Showing: <span class="avoidWrapping">' + totalNumCathedrals + ' of ' + totalNumCathedrals + '</span></span>');
+	$('#cathedral-showing-total').replaceWith('&lt;span id="cathedral-showing-total">Showing: &lt;span class="avoidWrapping">' + totalNumCathedrals + ' of ' + totalNumCathedrals + '&lt;/span>&lt;/span>');
 }
 
 /**
@@ -386,7 +414,7 @@ function processPanoSearch(panoList, numFound){
 		var panoID = pano.PID.split("gothic:")[1];
 		$('input[data-id="'+ panoID + '"]').parent().parent().show();		
 	}
-	$('#pano-showing-total').replaceWith('<span id="pano-showing-total">Showing: <span class="avoidWrapping">' + numFound + ' of ' + totalNumPanos + '</span></span>');
+	$('#pano-showing-total').replaceWith('&lt;span id="pano-showing-total">Showing: &lt;span class="avoidWrapping">' + numFound + ' of ' + totalNumPanos + '&lt;/span>&lt;/span>');
 }
 
 /**
@@ -402,7 +430,7 @@ function processCathedralSearch(cathedralList, numFound){
 		var cathedralID = cathedral.PID.split("gothic:")[1];
 		$('input[data-id="'+ cathedralID + '"]').parent().parent().show();		
 	}
-	$('#cathedral-showing-total').replaceWith('<span id="cathedral-showing-total">Showing: <span class="avoidWrapping">' + numFound + ' of ' + totalNumCathedrals + '</span></span>');
+	$('#cathedral-showing-total').replaceWith('&lt;span id="cathedral-showing-total">Showing: &lt;span class="avoidWrapping">' + numFound + ' of ' + totalNumCathedrals + '&lt;/span>&lt;/span>');
 }
 
 /**
@@ -449,27 +477,27 @@ function makePanoPost(title, panoID){
 		}).prop( "checked", true );
 
 		var postHTML = []; 
-		postHTML.push('<div class="post">');
-		postHTML.push('<a class="hash-link" name="'+ title.split(' ').join('_') + '"></a>');
-		postHTML.push('<div class="title">');
-		postHTML.push('<div class="pano-icon"></div>');
-		postHTML.push('<p>' + title + '</p>')
-		postHTML.push('<div class="button x-button nohighlight">&times</div>'); 
-		postHTML.push('<div class="button min-button nohighlight">&#8722</div>'); 
-		postHTML.push('</div>')
-		postHTML.push('<div class="content-area">');
-		postHTML.push('<div class="tab-bar">');
-		postHTML.push('<div class="tab pano selected nohighlight" data-tab="panorama"><p>Panorama</p></div>');
-		postHTML.push('<div class="tab info nohighlight" data-tab="information"><p>Information</p></div>');
-		postHTML.push('</div>');
-		postHTML.push('<iframe class="panorama tab-content" src="' + PANO_URL + GOTHIC_NAMESPACE + panoID + '" allowFullScreen></iframe>');
-		postHTML.push('<div class="information tab-content" style="display: none;">');
-		postHTML.push('<div class="google-maps tab-content"></div>'); 
-		postHTML.push('<h2>About the ' + title + '</h2>');
-		postHTML.push('<p>' + lorem + '</p>');
-		postHTML.push('</div>'); 
-		postHTML.push('</div>'); 
-		postHTML.push('</div>');
+		postHTML.push('&lt;div class="post">');
+		postHTML.push('&lt;a class="hash-link" name="'+ title.split(' ').join('_') + '">&lt;/a>');
+		postHTML.push('&lt;div class="title">');
+		postHTML.push('&lt;div class="pano-icon">&lt;/div>');
+		postHTML.push('&lt;p>' + title + '&lt;/p>')
+		postHTML.push('&lt;div class="button x-button nohighlight">&amp;times&lt;/div>'); 
+		postHTML.push('&lt;div class="button min-button nohighlight">&amp;#8722&lt;/div>'); 
+		postHTML.push('&lt;/div>')
+		postHTML.push('&lt;div class="content-area">');
+		postHTML.push('&lt;div class="tab-bar">');
+		postHTML.push('&lt;div class="tab pano selected nohighlight" data-tab="panorama">&lt;p>Panorama&lt;/p>&lt;/div>');
+		postHTML.push('&lt;div class="tab info nohighlight" data-tab="information">&lt;p>Information&lt;/p>&lt;/div>');
+		postHTML.push('&lt;/div>');
+		postHTML.push('&lt;iframe class="panorama tab-content" src="' + PANO_URL + GOTHIC_NAMESPACE + panoID + '" allowFullScreen>&lt;/iframe>');
+		postHTML.push('&lt;div class="information tab-content" style="display: none;">');
+		postHTML.push('&lt;div class="google-maps tab-content">&lt;/div>'); 
+		postHTML.push('&lt;h2>About the ' + title + '&lt;/h2>');
+		postHTML.push('&lt;p>' + lorem + '&lt;/p>');
+		postHTML.push('&lt;/div>'); 
+		postHTML.push('&lt;/div>'); 
+		postHTML.push('&lt;/div>');
 		var postRef = $(postHTML.join(""));
 
 		$("#posts").append(postRef);
@@ -480,10 +508,10 @@ function makePanoPost(title, panoID){
 
 		checkPostsDisplay();
 		var linkHTML = [];
-		linkHTML.push('<li>');
-		linkHTML.push('<a href="#' + title.split(' ').join('_') + '">'); 
-		linkHTML.push('<h2>' + title + '</h2>'); 
-		linkHTML.push('</a></li>');
+		linkHTML.push('&lt;li>');
+		linkHTML.push('&lt;a href="#' + title.split(' ').join('_') + '">'); 
+		linkHTML.push('&lt;h2>' + title + '&lt;/h2>'); 
+		linkHTML.push('&lt;/a>&lt;/li>');
 		var linkRef = $(linkHTML.join(""));
 		
 		$("#contents > ul").append(linkRef);
@@ -506,10 +534,10 @@ function makePanoPost(title, panoID){
 			var postContent = $(postRef).find(".content-area"); 
 			if ($(postContent).is(":visible")){
 				$(postRef).height("50px");
-				$(minButton).children().html("&#43");
+				$(minButton).children().html("&amp;#43");
 			}else{
 				$(postRef).height("75%");
-				$(minButton).children().html("&#8722");
+				$(minButton).children().html("&amp;#8722");
 			}
 
 			$(postContent).toggle();
@@ -537,38 +565,38 @@ function makeCathedralPost(title, cathedralID){
 		location.hash = "#" + title.split(' ').join('_');
 	}else{
 		var postHTML = []; 
-		postHTML.push('<div class="post">');
-		postHTML.push('<a class="hash-link" name="'+ title.split(' ').join('_') + '"></a>');
-		postHTML.push('<div class="title">');
-		postHTML.push('<div class="cathedral-icon"></div>');
-		postHTML.push('<p>' + title + '</p>')
-		postHTML.push('<div class="button x-button nohighlight">&times</div>'); 
-		postHTML.push('<div class="button min-button nohighlight">&#8722</div>'); 
-		postHTML.push('</div>')
-		postHTML.push('<div class="content-area">');
-		postHTML.push('<div class="tab-bar">');
-		postHTML.push('<div class="tab panos selected nohighlight" data-tab="panoramas"><p>Panoramas</p></div>');
-		postHTML.push('<div class="tab info middle-tab nohighlight" data-tab="information"><p>Information</p></div>');
-		postHTML.push('<div class="tab timeline  middle-tab nohighlight" data-tab="timeline"><p>Timeline</p></div>');
-		postHTML.push('<div class="tab resources nohighlight" data-tab="resources"><p>Resources</p></div>');
-		postHTML.push('</div>');
-		postHTML.push('<div class="panoramas tab-content">');
-		postHTML.push('<div class="pano-list"><ul></ul></div>');
-		postHTML.push('<div class="pano-tiles"></div>');  
-		postHTML.push('</div>');
-		postHTML.push('<div class="information tab-content" style="display: none;">');
-		postHTML.push('<div class="google-maps"></div>'); 
-		postHTML.push('<h2>About the ' + title + '</h2>');
-		postHTML.push('<p>' + lorem + '</p>');
-		postHTML.push('</div>'); 
-		postHTML.push('<div class="timeline tab-content" style="display: none;">');
-		postHTML.push('<h2>Timeline of ' + title + '</h2>');
-		postHTML.push('</div>');
-		postHTML.push('<div class="resources tab-content" style="display: none;">');
-		postHTML.push('<h2>Resources for ' + title + '</h2>');
-		postHTML.push('</div>');  
-		postHTML.push('</div>'); 
-		postHTML.push('</div>');
+		postHTML.push('&lt;div class="post">');
+		postHTML.push('&lt;a class="hash-link" name="'+ title.split(' ').join('_') + '">&lt;/a>');
+		postHTML.push('&lt;div class="title">');
+		postHTML.push('&lt;div class="cathedral-icon">&lt;/div>');
+		postHTML.push('&lt;p>' + title + '&lt;/p>')
+		postHTML.push('&lt;div class="button x-button nohighlight">&amp;times&lt;/div>'); 
+		postHTML.push('&lt;div class="button min-button nohighlight">&amp;#8722&lt;/div>'); 
+		postHTML.push('&lt;/div>')
+		postHTML.push('&lt;div class="content-area">');
+		postHTML.push('&lt;div class="tab-bar">');
+		postHTML.push('&lt;div class="tab panos selected nohighlight" data-tab="panoramas">&lt;p>Panoramas&lt;/p>&lt;/div>');
+		postHTML.push('&lt;div class="tab info middle-tab nohighlight" data-tab="information">&lt;p>Information&lt;/p>&lt;/div>');
+		postHTML.push('&lt;div class="tab timeline  middle-tab nohighlight" data-tab="timeline">&lt;p>Timeline&lt;/p>&lt;/div>');
+		postHTML.push('&lt;div class="tab resources nohighlight" data-tab="resources">&lt;p>Resources&lt;/p>&lt;/div>');
+		postHTML.push('&lt;/div>');
+		postHTML.push('&lt;div class="panoramas tab-content">');
+		postHTML.push('&lt;div class="pano-list">&lt;ul>&lt;/ul>&lt;/div>');
+		postHTML.push('&lt;div class="pano-tiles">&lt;/div>');  
+		postHTML.push('&lt;/div>');
+		postHTML.push('&lt;div class="information tab-content" style="display: none;">');
+		postHTML.push('&lt;div class="google-maps">&lt;/div>'); 
+		postHTML.push('&lt;h2>About the ' + title + '&lt;/h2>');
+		postHTML.push('&lt;p>' + lorem + '&lt;/p>');
+		postHTML.push('&lt;/div>'); 
+		postHTML.push('&lt;div class="timeline tab-content" style="display: none;">');
+		postHTML.push('&lt;h2>Timeline of ' + title + '&lt;/h2>');
+		postHTML.push('&lt;/div>');
+		postHTML.push('&lt;div class="resources tab-content" style="display: none;">');
+		postHTML.push('&lt;h2>Resources for ' + title + '&lt;/h2>');
+		postHTML.push('&lt;/div>');  
+		postHTML.push('&lt;/div>'); 
+		postHTML.push('&lt;/div>');
 		var postRef = $(postHTML.join(""));
 
 		$("#posts").append(postRef);
@@ -580,10 +608,10 @@ function makeCathedralPost(title, cathedralID){
 		checkPostsDisplay();
 
 		var linkHTML = [];
-		linkHTML.push('<li>');
-		linkHTML.push('<a href="#' + title.split(' ').join('_') + '">'); 
-		linkHTML.push('<h2>' + title + '</h2>'); 
-		linkHTML.push('</a></li>');
+		linkHTML.push('&lt;li>');
+		linkHTML.push('&lt;a href="#' + title.split(' ').join('_') + '">'); 
+		linkHTML.push('&lt;h2>' + title + '&lt;/h2>'); 
+		linkHTML.push('&lt;/a>&lt;/li>');
 		var linkRef = $(linkHTML.join(""));
 		
 		$("#contents > ul").append(linkRef);
@@ -602,14 +630,14 @@ function makeCathedralPost(title, cathedralID){
 				var pano = panoList[i];
 				var panoID = pano.PID.split("gothic:")[1];
 				var panoTitle = pano["dc.title_s"][0]; 
-				var tileLink = $('<li data-pid="' + panoID + '" data-title="' + panoTitle + '">' + panoTitle + '</li>');
+				var tileLink = $('&lt;li data-pid="' + panoID + '" data-title="' + panoTitle + '">' + panoTitle + '&lt;/li>');
 				$($panoList).append(tileLink);
-				var tile = $('<div class="tile" '
+				var tile = $('&lt;div class="tile" '
 					+ 'data-pid="' + panoID
 					+ '" data-title="' + panoTitle
-					+ '" > <img src="' + THUMBNAIL_BEGIN + GOTHIC_NAMESPACE + panoID + THUMBNAIL_END 
+					+ '" > &lt;img src="' + THUMBNAIL_BEGIN + GOTHIC_NAMESPACE + panoID + THUMBNAIL_END 
 					+ '" alt="'+ panoTitle + '"/>'
-					+ '<div class="hover-text"><p>' + panoTitle + '</p></div></div>'); 
+					+ '&lt;div class="hover-text">&lt;p>' + panoTitle + '&lt;/p>&lt;/div>&lt;/div>'); 
 				$($panoTilesDiv).append(tile);
 
 				$(tileLink).click(function(event){
@@ -632,10 +660,10 @@ function makeCathedralPost(title, cathedralID){
 			var postContent = $(postRef).find(".content-area"); 
 			if ($(postContent).is(":visible")){
 				$(postRef).height("50px");
-				$(minButton).children().html("&#43");
+				$(minButton).children().html("&amp;#43");
 			}else{
 				$(postRef).height("75%");
-				$(minButton).children().html("&#8722");
+				$(minButton).children().html("&amp;#8722");
 			}
 
 			$(postContent).toggle();
@@ -655,7 +683,7 @@ function makeCathedralPost(title, cathedralID){
  * @return {number} index in posts array or -1 if does not exist
  */
 function isPost(panoID){
- 	for (var i = 0, len = posts.length; i < len; i++){
+ 	for (var i = 0, len = posts.length; i &lt; len; i++){
 		if (posts[i].id == panoID){
 			return i; 
 		}
@@ -754,7 +782,7 @@ function initializeCathedralMap(mapDiv){
  * @param {dic} mapDiv The div for containing the map 
  */
 function resizeMaps(){
-	for(var i = 0; i < cathedralMaps.length; i++){
+	for(var i = 0; i &lt; cathedralMaps.length; i++){
 		google.maps.event.trigger(cathedralMaps[i], 'resize');
 		cathedralMaps[i].setCenter(new google.maps.LatLng(47, 3)); 
 	}
@@ -763,3 +791,26 @@ function resizeMaps(){
 $(init);
 
 google.maps.event.addDomListener(window, 'load', initializeSearchMap);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#checkPostsDisplay">checkPostsDisplay</a></li><li><a href="global.html#clickCathedral">clickCathedral</a></li><li><a href="global.html#clickPano">clickPano</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initializeCathedralMap">initializeCathedralMap</a></li><li><a href="global.html#initializeSearchMap">initializeSearchMap</a></li><li><a href="global.html#isPost">isPost</a></li><li><a href="global.html#makeCathedralPost">makeCathedralPost</a></li><li><a href="global.html#makePanoPost">makePanoPost</a></li><li><a href="global.html#processAllCathedrals">processAllCathedrals</a></li><li><a href="global.html#processAllPanos">processAllPanos</a></li><li><a href="global.html#processCathedralSearch">processCathedralSearch</a></li><li><a href="global.html#processPanoSearch">processPanoSearch</a></li><li><a href="global.html#processSolrJSON">processSolrJSON</a></li><li><a href="global.html#removePost">removePost</a></li><li><a href="global.html#resizeMaps">resizeMaps</a></li><li><a href="global.html#resizeToWindow">resizeToWindow</a></li><li><a href="global.html#searchAttributes">searchAttributes</a></li><li><a href="global.html#switchTabs">switchTabs</a></li><li><a href="global.html#tabSelect">tabSelect</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu May 19 2016 16:13:00 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
