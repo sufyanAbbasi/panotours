@@ -13,7 +13,7 @@ To open up panoaramas, search by name using the navigation window and click on t
 
 ## API Reference
 
-[a relative link](./documentation/index.html)
+[API Link](http://htmlpreview.github.io/?https://raw.github.com/sufyanAbbasi/panotours/tree/master/documentation/index.html)
 
 
 ## License
